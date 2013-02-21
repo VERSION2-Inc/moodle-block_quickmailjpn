@@ -1,0 +1,20 @@
+<form id="theform" method="post" action="checkemail.php">
+<table cellpadding="10" cellspacing="0" class="generalbox">
+  <tr>
+    <td align="right">
+     <?php print_string('entermobilephone', 'block_quickmailjpn') ?>
+     <input type="text" name="mobileemail" size="40" value="<?php p($mobileemail); ?>" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center" class="generalboxcontent">
+		<input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
+		<input type="hidden" name="id" value="<?php echo $course->id; ?>" />
+		<input type="hidden" name="instanceid" value="<?php echo $instanceid; ?>" />
+		<input type="hidden" name="action" value="confirm" />
+		<input type="submit" name="sendemail" value="<?php print_string('sendconfirmationemail', 'block_quickmailjpn') ?>" />
+    </td>
+  </tr>
+</table>
+</form>

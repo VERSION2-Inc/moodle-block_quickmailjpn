@@ -1,0 +1,81 @@
+<?php // $Id: email.html 4 2012-04-28 18:19:08Z yama $
+/**
+ * email.html - Prints the email form for Quickmail
+ *
+ * @author Mark Nielsen
+ * @version $Id: email.html 4 2012-04-28 18:19:08Z yama $
+ * @package quickmail
+ **/
+?>
+
+<script type="text/javascript">
+//<![CDATA[
+function block_quickmailjpn_toggle(toggle, start, end) {
+    // Element ID
+    var id = 'mailto'+start;
+
+    // iterate through all of the appropriate checkboxes and change their state
+    while(document.getElementById(id) && start != end) {
+        document.getElementById(id).checked = toggle;
+        start++;
+        id = 'mailto'+start;
+    }
+
+    return false;
+}
+function test(a) {
+	alert(a);
+}
+//]]>
+</script>
+
+<div align="center">
+<form name="theform" method="post" action="email.php" enctype="multipart/form-data">
+    <table border="0" cellpadding="5">
+      <tr valign="top">
+    <td align="right"><strong><?php print_string('to', 'block_quickmailjpn'); ?>:</strong></td>
+        <td align="left"> <a href="javascript:void(0);" onclick="block_quickmailjpn_toggle(true, 1, 0);"><?php print_string('selectall'); ?></a> 
+          / <a href="javascript:void(0);" onclick="block_quickmailjpn_toggle(false, 1, 0);"><?php print_string('deselectall'); ?></a> 
+          <br />
+        <br />
+        <?php echo $tblStr; ?>
+    </td>
+  </tr>
+  <tr valign="top">
+    <td align="right"><b><?php print_string('from'); ?>:</b></td>
+    <td align="left"><input type="text" name="mailfrom" size="60" value="<?php p($form->mailfrom); ?>" /></td>
+  </tr>
+  <tr valign="top">
+    <td align="right"><b><?php print_string('subject', 'forum'); ?>:</b></td>
+    <td align="left"><input type="text" name="subject" size="60" value="<?php p($form->subject); ?>" /></td>
+  </tr>
+  <tr valign="top">
+    <td align="right"><b><?php print_string('message', 'forum'); ?>:</b></td>
+    <td align="left">
+    <?php
+    	$usehtmleditor='';
+    	print_textarea($usehtmleditor, 10, 65, 630, 200, 'message', $form->message);
+    ?>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="right"><b><?php print_string('formattexttype'); ?>:</b></td>
+        <td align="left">Plain Text 
+          <?php 
+        echo '<input type="hidden" name="format" value="'.FORMAT_PLAIN.'" />';
+     ?>
+        </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+    <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
+    <input type="hidden" name="id" value="<?php echo $course->id; ?>" />
+    <input type="hidden" name="instanceid" value="<?php echo $instanceid; ?>" />
+    <input type="submit" name="cancel" value="<?php print_string('cancel') ?>" />
+    <input type="submit" name="sendemail" value="<?php print_string('sendemail', 'block_quickmailjpn') ?>" />
+    </td>
+  </tr>
+</table>
+</form>
+</div>
