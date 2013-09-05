@@ -9,7 +9,7 @@
  * @author Mark Nielsen
  * @version $Id: block_quickmailjpn.php 4 2012-04-28 18:19:08Z yama $
  * @package quickmail
- **/ 
+ **/
 
 require_once dirname(__FILE__).'/constants.php';
 
@@ -22,9 +22,9 @@ require_once dirname(__FILE__).'/constants.php';
  * @todo Make a global config so that admins can set the defaults (default for student (yes/no) default for groupmode (select a groupmode or use the courses groupmode)) NOTE: make sure email.php and emaillog.php use the global config settings
  **/
 class block_quickmailjpn extends block_list {
-    
+
     function has_config() {return true;}
-	
+
     /**
      * Prepare user_info_field
      *
@@ -32,7 +32,7 @@ class block_quickmailjpn extends block_list {
      **/
     function init_db() {
     	global $DB;
-    	
+
         if ($DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::EMAIL))
             && $DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::STATUS))) {
             return;
@@ -51,9 +51,9 @@ class block_quickmailjpn extends block_list {
 		$user_info_field->param3      = '0';
 		$user_info_field->param4      = NULL;
 		$user_info_field->param5      = NULL;
-		
+
  		$max_sortorder = intval($DB->get_field_sql("SELECT MAX(sortorder) FROM {user_info_field}"));
-		
+
 		if (!$DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::EMAIL))) {
 			// email カスタムフィールドが存在しないので作成
 			$user_info_field->shortname   = QuickMailJPN_FieldName::EMAIL;
@@ -65,7 +65,7 @@ class block_quickmailjpn extends block_list {
 				error('user_info_field can not be created.');
 			}
 		}
-		
+
 		if (!$DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::STATUS))) {
 			// status カスタムフィールドが存在しないので作成
 			$user_info_field->shortname   = QuickMailJPN_FieldName::STATUS;
@@ -78,7 +78,7 @@ class block_quickmailjpn extends block_list {
 			}
     	}
     }
-    
+
     /**
      * Sets the block name and version number
      *
@@ -87,7 +87,7 @@ class block_quickmailjpn extends block_list {
     function init() {
         $this->title = get_string('blockname', 'block_quickmailjpn');
     }
-	
+
     /**
      * Gets the contents of the block (course view)
      *
@@ -107,13 +107,13 @@ class block_quickmailjpn extends block_list {
         $this->content->footer = '';
         $this->content->items = array();
         $this->content->icons = array();
-        
+
         if (empty($this->instance)) {
             return $this->content;
         }
-        
+
 		$block_context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
-		
+
 		if (has_capability('block/quickmailjpn:cansend', $block_context)) {
 			// 「作成」
 			$this->content->items[] = ' <a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/email.php'.
@@ -122,7 +122,7 @@ class block_quickmailjpn extends block_list {
 			$this->content->icons[]
                 = $OUTPUT->pix_icon('i/email', get_string('email'), 'moodle',
                                     array('width' => 16, 'height' => 16));
-			
+
 			// 「履歴」
 			$this->content->items[] = ' <a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/emaillog.php'.
 			                          '?id='.$this->course->id.'&amp;instanceid='.$this->instance->id.'">'.
@@ -146,7 +146,7 @@ class block_quickmailjpn extends block_list {
 			// (HTMLエディタが自動で付加してしまうので)
 			$this->content->items[] = preg_replace('@<p>(.*?)</p>@is', '$1', $explanation);
 			$this->content->icons[] = null;
-			
+
 			$email_status = $DB->get_field_sql(
 				'SELECT d.data FROM {user_info_data} d, {user_info_field} f'
 				.' WHERE d.userid = :userid AND d.fieldid = f.id'
@@ -164,30 +164,30 @@ class block_quickmailjpn extends block_list {
                 'span', get_string("user-$email_status", 'block_quickmailjpn'),
                 array('class' => $classes[$email_status]));
 			$str_email_status = get_string("block-$email_status", 'block_quickmailjpn', $str_email_status);
-			
+
 			$email_address = $DB->get_field_sql(
 				'SELECT d.data FROM {user_info_data} d, {user_info_field} f'
 				.' WHERE d.userid = :userid AND d.fieldid = f.id'
                 .'   AND f.shortname = :shortname',
                 array('userid' => $USER->id, 'shortname' => QuickMailJPN_FieldName::EMAIL));
 			if ($email_address) {
-				$str_email_address = '<small>[ '.$email_address.' ]</small><br />';
+				$str_email_address = '[ '.$email_address.' ]<br />';
 			} else {
 				$str_email_address = '';
 			}
-			
+
 			$this->content->items[] = '<div class="mymobilephone">'.
                                       get_string('mymobilephone', 'block_quickmailjpn').'<br />'.
 			                          $str_email_address.
 			                          '<span class="nowrap">'.
-			                          '<small><a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/'.
+			                          '<a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/'.
                                       'checkemail.php?id='.$this->course->id.'&amp;instanceid='.
-                                      $this->instance->id.'">'.$str_email_status.'</a></small>'.
+                                      $this->instance->id.'">'.$str_email_status.'</a>'.
                                       '</span>'.
                                       '</div>';
 			$this->content->icons[] = null;
 		}
-		
+
 		return $this->content;
 	}
 
@@ -200,7 +200,7 @@ class block_quickmailjpn extends block_list {
         global $COURSE;
 
         $this->course = $COURSE;
-		
+
 		// Override its title
 		if (isset($this->config->title)) {
 			$this->title = format_string($this->config->title);

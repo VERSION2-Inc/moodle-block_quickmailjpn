@@ -31,7 +31,7 @@
 // For the core capabilities, the variable is $moodle_capabilities.
 
 
-$block_quickmailjpn_capabilities = array(
+$capabilities = array(
 
     'block/quickmailjpn:cansend' => array(
 
@@ -41,10 +41,10 @@ $block_quickmailjpn_capabilities = array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW,
-            'admin' => CAP_ALLOW
+            'manager' => CAP_ALLOW
         )
     ),
-    
+
     'block/quickmailjpn:view' => array(
 
         'captype' => 'read',
@@ -53,6 +53,17 @@ $block_quickmailjpn_capabilities = array(
             'user' => CAP_ALLOW
         )
     ),
-);
 
-?>
+    'block/quickmailjpn:addinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+
+        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+    ),
+);
