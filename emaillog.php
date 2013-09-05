@@ -9,6 +9,7 @@
  * @version $Id: emaillog.php 4 2012-04-28 18:19:08Z yama $
  * @package quickmailjpn
  **/
+
 /* @var $OUTPUT core_renderer */
 
 require_once('../../config.php');

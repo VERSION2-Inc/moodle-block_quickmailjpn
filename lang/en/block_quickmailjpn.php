@@ -1,6 +1,7 @@
 <?php // $Id: block_quickmailjpn.php 4 2012-04-28 18:19:08Z yama $
       // block_quickmailjpn.php - created with Moodle 2.0 dev (2007101508)
 
+$string['errornocourseusers'] = 'No course users found to email';
 $string['action'] = 'Action';
 $string['areyousure'] = 'Are you sure you want to delete all emails in your history?';
 $string['attachment'] = 'Attachment';

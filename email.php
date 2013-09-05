@@ -26,7 +26,7 @@ if (!$course = $DB->get_record('course', array('id' => $id))) {
 }
 
 require_login($course->id);
-$context = get_context_instance(CONTEXT_COURSE, $course->id);
+$context = context_course::instance($course->id);
 
 if ($instanceid) {
     $instance = $DB->get_record('block_instances', array('id' => $instanceid));
@@ -39,8 +39,8 @@ if ($instanceid) {
 /// This block of code ensures that QuickmailJPN will run
 ///     whether it is in the course or not
 if (empty($instance)) {
-    $groupmode = groupmode($course);
-    if (has_capability('block/quickmailjpn:cansend', get_context_instance(CONTEXT_BLOCK, $instanceid))) {
+    $groupmode = $course->groupmode;
+    if (has_capability('block/quickmailjpn:cansend', context_block::instance($instanceid))) {
         $haspermission = true;
     } else {
         $haspermission = false;
@@ -54,11 +54,11 @@ if (empty($instance)) {
 }
 
 if (!$haspermission) {
-    error('Sorry, you do not have the correct permissions to use QuickmailJPN.');
+	print_error('errornopermission', 'block_quickmailjpn');
 }
 
 if (!$courseusers = get_users_by_capability($context, 'moodle/grade:view', 'u.*', 'u.lastname, u.firstname', '', '', '', '', false)) {
-    error('No course users found to email');
+	print_error('errornocourseusers', 'block_quickmailjpn');
 }
 
 
@@ -69,7 +69,7 @@ $userfield_status_id = $DB->get_field('user_info_field', 'id', array('shortname'
 if ($action == 'view') {
     // viewing an old email.  Hitting the db and puting it into the object $form
     $emailid = required_param('emailid', PARAM_INT);
-    $form = $DB->get_record('block_quickmailjpn_log', array('id' => $emailid));
+    $form = $DB->get_record('block_quickmailjpn_log', array('id' => $emailid), '*', MUST_EXIST);
     $form->mailto = explode(',', $form->mailto); // convert mailto back to an array
 
 } else if ($form = data_submitted()) {   // data was submitted to be mailed
@@ -280,7 +280,7 @@ echo $OUTPUT->heading($strquickmailjpn);
 
 // error printing
 if (isset($form->error)) {
-    notify($form->error);
+    echo $OUTPUT->notification($form->error);
     if (isset($form->usersfail)) {
         $errorstring = '';
 
