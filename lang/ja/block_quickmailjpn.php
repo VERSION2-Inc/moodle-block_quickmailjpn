@@ -1,4 +1,4 @@
-<?PHP // $Id: block_quickmailjpn.php 4 2012-04-28 18:19:08Z yama $ 
+<?PHP // $Id: block_quickmailjpn.php 4 2012-04-28 18:19:08Z yama $
       // block_quickmailjpn.php - created with Moodle 2.0 dev (2007101508)
 
 $string['action'] = '操作';
@@ -12,6 +12,7 @@ $string['check'] = 'すべてを選択';
 $string['chooseafile'] = 'ファイルを選択';
 $string['clearhistory'] = 'すべての履歴をクリア';
 $string['compose'] = '作成';
+$string['confirmdelete'] = '本当にこのメール履歴を削除してもよろしいですか？';
 $string['date'] = '日時';
 $string['delete'] = '削除';
 $string['deletefail'] = '削除が失敗しました。';
@@ -20,19 +21,19 @@ $string['email'] = 'メール';
 $string['emailfail'] = 'メールエラー:';
 $string['emailfailerror'] = 'エラーが発生したため、下記のユーザにメール送信されませんでした ...';
 $string['emailstop'] = 'メールアドレスが無効にされています:';
+$string['errornopermission'] = '申し訳ありません。クイック携帯メールJPNを利用する権限がありません。';
 $string['history'] = '履歴';
 $string['log'] = 'ログ';
 $string['messageerror'] = 'メッセージを入力してください!';
 $string['nogroupmembers'] = 'グループメンバーなし';
 $string['notingroup'] = 'グループ外';
-$string['sendemail'] = 'メールを送信する';
 $string['sendconfirmationemail'] = '確認メールを送信する';
+$string['sendemail'] = 'メールを送信する';
 $string['subjecterror'] = '題名を入力してください!';
 $string['successfulemail'] = 'メールが正常に送信されました。';
 $string['to'] = 'To';
 $string['toerror'] = 'メールの受信者を選択してください!';
 $string['uncheck'] = 'すべての選択を解除';
-$string['confirmdelete'] = '本当にこのメール履歴を削除してもよろしいですか？';
 
 $string['allowstudents'] = '{$a} にクイックメールの使用を許可する'; // ORPHANED
 
@@ -78,7 +79,7 @@ $string['san'] = 'さん';
 $string['configtitle'] = 'ブロックタイトル';
 $string['configexplanation'] = '説明文';
 $string['explanation'] = '<div class="explanation">
-ここであなたの携帯メールアドレスを設定してください。 
+ここであなたの携帯メールアドレスを設定してください。
 <strong>※メールアドレスを変更した場合は忘れずに更新してください。</strong><br />
 教員は講義に関する重要なメールやお知らせをこのアドレス宛に送ります。
 </div>';

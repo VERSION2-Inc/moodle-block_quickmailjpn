@@ -12,7 +12,7 @@ require_once('../../config.php');
 require_once($CFG->libdir.'/blocklib.php');
 require_once('./lib.php');
 require_once './constants.php';
-    
+
 $id         = required_param('id', PARAM_INT);  // course ID
 $instanceid = optional_param('instanceid', 0, PARAM_INT);
 $action     = optional_param('action', '', PARAM_ALPHA);
@@ -36,7 +36,7 @@ if ($instanceid) {
     }
 }
 
-/// This block of code ensures that QuickmailJPN will run 
+/// This block of code ensures that QuickmailJPN will run
 ///     whether it is in the course or not
 if (empty($instance)) {
     $groupmode = groupmode($course);
@@ -48,11 +48,11 @@ if (empty($instance)) {
 } else {
     // create a quickmailjpn block instance
     $quickmailjpn = block_instance('quickmailjpn', $instance);
-        
+
     $groupmode     = $quickmailjpn->groupmode();
     $haspermission = $quickmailjpn->check_permission();
 }
-    
+
 if (!$haspermission) {
     error('Sorry, you do not have the correct permissions to use QuickmailJPN.');
 }
@@ -60,12 +60,12 @@ if (!$haspermission) {
 if (!$courseusers = get_users_by_capability($context, 'moodle/grade:view', 'u.*', 'u.lastname, u.firstname', '', '', '', '', false)) {
     error('No course users found to email');
 }
-	
-	
+
+
 // カスタムフィールドIDを逆引き
 $userfield_email_id  = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::EMAIL));
 $userfield_status_id = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::STATUS));
-	
+
 if ($action == 'view') {
     // viewing an old email.  Hitting the db and puting it into the object $form
     $emailid = required_param('emailid', PARAM_INT);
@@ -79,7 +79,7 @@ if ($action == 'view') {
         // cancel button was hit...
         redirect("$CFG->wwwroot/course/view.php?id=$course->id");
     }
-        
+
     // prepare variables for email
     $form->subject = stripslashes($form->subject);
     $form->subject = clean_param(strip_tags($form->subject, '<lang><span>'), PARAM_RAW); // Strip all tags except multilang
@@ -99,31 +99,31 @@ if ($action == 'view') {
     // no errors, then email
     if(!isset($form->error)) {
         $mailedto = array(); // holds all the userid of successful emails
-            
+
         // get the correct formating for the emails
         $form->plaintxt = format_text_email($form->message, $form->format); // plain text
         $form->html = format_text($form->message, $form->format);        // html
 
         //$mail = new JPHPMailer();
-			
+
         // run through each user id and send a copy of the email to him/her
         // not sending 1 email with CC to all user ids because emails were required to be kept private
         foreach ($form->mailto as $userid) {
             // 携帯メールはMoodle本体のメールとは別機能なのでブロックしない
             //if (!$courseusers[$userid]->emailstop) {
-                	
+
             $email = $DB->get_field('user_info_data', 'data', array('userid' => $userid, 'fieldid' => $userfield_email_id));
             if (empty($email)) {
                 // 未設定
                 continue;
             }
-                	
+
             $status = $DB->get_field('user_info_data', 'data', array('userid' => $userid, 'fieldid' => $userfield_status_id));
             if ($status != QuickMailJPN_State::CONFIRMED) {
                 // 未チェック
                 continue;
             }
-                	
+
             //send e-mail by JPHPMailer via PHPMailer
             $mail = new JPHPMailer();
             $mail->addTo($email);
@@ -131,10 +131,10 @@ if ($action == 'view') {
             $mail->setSubject($form->subject);
             $bodyText  = $courseusers[$userid]->username.' '.fullname($courseusers[$userid]).get_string('san', 'block_quickmailjpn')."\n\n";
             $bodyText .= $form->plaintxt;
-					
+
             $mail->setBody($bodyText);
             $mailresult = $mail->send();
-                    
+
             // checking for errors, if there is an error, store the name
             if (!$mailresult || (string) $mailresult == 'emailstop') {
                 $form->error = get_string('emailfailerror', 'block_quickmailjpn');
@@ -149,7 +149,7 @@ if ($action == 'view') {
             //    $form->usersfail['emailstop'][] = $courseusers[$userid]->lastname.', '.$courseusers[$userid]->firstname;
             //}
         }
-            
+
         // cleanup - delete the uploaded file
         if (isset($um) and file_exists($um->get_new_filepath())) {
             unlink($um->get_new_filepath());
@@ -164,7 +164,7 @@ if ($action == 'view') {
         $log->message    = addslashes($form->message);
         $log->mailfrom   = addslashes($form->mailfrom);
         $log->timesent   = time();
-            
+
         if (!$DB->insert_record('block_quickmailjpn_log', $log)) {
             error('Email not logged.');
         }
@@ -179,13 +179,14 @@ if ($action == 'view') {
 
 } else {
     // set them as blank
+    $form = new \stdClass();
     $form->subject = $form->message = $form->format = $form->attachment = '';
     $form->mailfrom = $USER->email;
 }
 
 /// Create the table object for holding course users in the To section of email.html
-    
-	
+
+
 $tblStr  = "<table border='0' cellspacing='2' cellpadding='2'>\n";
 $tblStr .= "<tr>";
 $tblStr .= "<th colspan='2' align='left'>".get_string('select', 'block_quickmailjpn')."</th>";
@@ -193,12 +194,12 @@ $tblStr .= "<th>".get_string('name', 'block_quickmailjpn')."</th>";
 $tblStr .= "<th>".get_string('mobilephone', 'block_quickmailjpn')."</th>";
 $tblStr .= "<th>".get_string('status', 'block_quickmailjpn')."</th>";
 $tblStr .= "</tr>\n";
-	
+
 // フルネーム順にソートするために先にフルネームを取得してプロパティ追加
 array_walk($courseusers, create_function('$u', '
         $u->fullname = fullname($u);
     '));
-    
+
 // 設定に従ってソート
 // TODO: 拡張フィールドによるソートにも対応させる
 switch ($CFG->block_quickmailjpn_sortorder) {
@@ -213,15 +214,15 @@ default:
 $prev_encoding = mb_internal_encoding();
 {
     mb_internal_encoding('utf-8'); // ソート順のエンコーディングを指定
-        
+
     uasort($courseusers, create_function('$lhs,$rhs', '
             return strnatcasecmp($lhs->'.$order.', $rhs->'.$order.');
         '));
 }
 mb_internal_encoding($prev_encoding);
-    
+
 $i = 0;
-foreach ($courseusers as $user) { 
+foreach ($courseusers as $user) {
     $i++;
     $email  = $DB->get_field('user_info_data', 'data', array('userid' => $user->id, 'fieldid' => $userfield_email_id));
     $status = $DB->get_field('user_info_data', 'data', array('userid' => $user->id, 'fieldid' => $userfield_status_id));
@@ -261,7 +262,7 @@ foreach ($courseusers as $user) {
 }
 
 $tblStr .= "</table>\n";
-    
+
 // set up some strings
 $readonly        = '';
 $strchooseafile  = get_string('chooseafile', 'block_quickmailjpn');
@@ -287,14 +288,14 @@ if (isset($form->error)) {
             $errorstring .= get_string('emailfail', 'block_quickmailjpn').'<br />';
             foreach($form->usersfail['emailfail'] as $user) {
                 $errorstring .= $user.'<br />';
-            }               
+            }
         }
 
         if (isset($form->usersfail['emailstop'])) {
             $errorstring .= get_string('emailstop', 'block_quickmailjpn').'<br />';
             foreach($form->usersfail['emailstop'] as $user) {
                 $errorstring .= $user.'<br />';
-            }               
+            }
         }
         notice($errorstring, "$CFG->wwwroot/course/view.php?id=$course->id", $course);
     }
@@ -302,11 +303,11 @@ if (isset($form->error)) {
 
 $currenttab = 'compose';
 include($CFG->dirroot.'/blocks/quickmailjpn/tabs.php');
-    
+
 echo $OUTPUT->box_start('center');
 require($CFG->dirroot.'/blocks/quickmailjpn/email.html');
 echo $OUTPUT->box_end();
-    
+
 if ($usehtmleditor) {
     use_html_editor('message');
 }

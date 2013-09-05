@@ -9,11 +9,12 @@
  * @version $Id: emaillog.php 4 2012-04-28 18:19:08Z yama $
  * @package quickmailjpn
  **/
-    
+/* @var $OUTPUT core_renderer */
+
 require_once('../../config.php');
 require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->libdir.'/tablelib.php');
-    
+
 $id = required_param('id', PARAM_INT);    // course id
 $action = optional_param('action', '', PARAM_ALPHA);
 $instanceid = optional_param('instanceid', 0, PARAM_INT);
@@ -22,9 +23,7 @@ $PAGE->set_url('/blocks/quickmailjpn/emaillog.php');
 
 $instance = new stdClass();
 
-if (!$course = $DB->get_record('course', array('id' => $id))) {
-    error('Course ID was incorrect');
-}
+$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
 require_login($course->id);
 
@@ -36,10 +35,10 @@ if ($instanceid) {
     }
 }
 
-/// This block of code ensures that QuickmailJPN will run 
+/// This block of code ensures that QuickmailJPN will run
 ///     whether it is in the course or not
 if (empty($instance)) {
-    if (has_capability('block/quickmailjpn:cansend', get_context_instance(CONTEXT_BLOCK, $instanceid))) {
+    if (has_capability('block/quickmailjpn:cansend', context_block::instance($instanceid))) {
         $haspermission = true;
     } else {
         $haspermission = false;
@@ -49,16 +48,16 @@ if (empty($instance)) {
     $quickmailjpn = block_instance('quickmailjpn', $instance);
     $haspermission = $quickmailjpn->check_permission();
 }
-    
+
 if (!$haspermission) {
-    error('Sorry, you do not have the correct permissions to use QuickmailJPN.');
+	print_error('errornopermission', 'block_quickmailjpn');
 }
-    
+
 // log deleting happens here (NOTE: reporting is handled below)
 $dumpresult = false;
 if ($action == 'dump') {
     confirm_sesskey();
-        
+
     // delete a single log or all of them
     if ($emailid = optional_param('emailid', 0, PARAM_INT)) {
         $dumpresult = $DB->delete_records('block_quickmailjpn_log', array('id' => $emailid));
@@ -67,17 +66,54 @@ if ($action == 'dump') {
     }
 }
 
+
+/// Start printing everyting
+$strquickmailjpn = get_string('blockname', 'block_quickmailjpn');
+if (empty($pastemails)) {
+    $disabled = 'disabled="disabled" ';
+} else {
+    $disabled = '';
+}
+
+/// Header setup
+$PAGE->set_title($course->fullname.': '.$strquickmailjpn);
+$PAGE->set_heading($course->fullname);
+$PAGE->navbar->add($strquickmailjpn);
+
+echo $OUTPUT->header();
+
+echo $OUTPUT->heading($strquickmailjpn);
+
+$currenttab = 'history';
+include($CFG->dirroot.'/blocks/quickmailjpn/tabs.php');
+
+/// delete reporting happens here
+if ($action == 'dump') {
+	if ($dumpresult) {
+		echo $OUTPUT->notification(get_string('deletesuccess', 'block_quickmailjpn'), 'notifysuccess');
+	} else {
+		echo $OUTPUT->notification(get_string('deletefail', 'block_quickmailjpn'));
+	}
+}
+
 /// set table columns and headers
 $tablecolumns = array('timesent', 'subject', 'action');
 $tableheaders = array(get_string('date', 'block_quickmailjpn'), get_string('subject', 'forum'),
                       get_string('action', 'block_quickmailjpn'));
 
+if ($action != 'confirm') {
+	echo $OUTPUT->container_start('', 'tablecontainer');
+}
 $table = new flexible_table('bocks-quickmailjpn-emaillog');
 
 /// define table columns, headers, and base url
 $table->define_columns($tablecolumns);
 $table->define_headers($tableheaders);
-$table->define_baseurl($CFG->wwwroot.'/blocks/quickmailjpn/emaillog.php?id='.$course->id.'&amp;instanceid='.$instanceid);
+$table->define_baseurl(
+		new moodle_url('/blocks/quickmailjpn/emaillog.php', array(
+				'id' => $course->id,
+				'instanceid' => $instanceid
+		)));
 
 /// table settings
 $table->sortable(true, 'timesent', SORT_DESC);
@@ -97,12 +133,12 @@ $table->set_attribute('class', 'generaltable generalbox');
 $table->set_attribute('align', 'center');
 $table->set_attribute('width', '80%');
 
-$table->setup();  
-    
+$table->setup();
+
 /// SQL
-$sql = "SELECT * 
+$sql = "SELECT *
               FROM {block_quickmailjpn_log}
-             WHERE courseid = :courseid 
+             WHERE courseid = :courseid
                AND userid = :userid ";
 $params = array('courseid' => $course->id, 'userid' => $USER->id);
 
@@ -118,64 +154,39 @@ $sql .= ' ORDER BY '. $table->get_sql_sort();
 $total = $DB->count_records('block_quickmailjpn_log', array('courseid' => $course->id, 'userid' => $USER->id));
 $table->pagesize(10, $total);
 
-if ($pastemails = $DB->get_records_sql($sql, $params, $table->get_page_start(), $table->get_page_size())) {
-    foreach ($pastemails as $pastemail) {
-        $table->add_data( array(userdate($pastemail->timesent),
-                                s($pastemail->subject),
-                                "<a href=\"email.php?id=$course->id&amp;instanceid=$instanceid&amp;emailid=$pastemail->id&amp;action=view\">".
-                                $OUTPUT->pix_icon('i/search', get_string('view')).
-                                "<a href=\"emaillog.php?id=$course->id&amp;instanceid=$instanceid&amp;sesskey=$USER->sesskey&amp;action=dump&amp;emailid=$pastemail->id\"".
-                                ' onclick="return confirm(\''.get_string('confirmdelete', 'block_quickmailjpn').'\');" />'.
-                                $OUTPUT->pix_icon('t/delete', get_string('delete')).
-                                '</a>'));
-        // TODO: ↑JavaScriptオフの場合用に確認ページをはさむ
-    }
-}
-    
-/// Start printing everyting
-$strquickmailjpn = get_string('blockname', 'block_quickmailjpn');
-if (empty($pastemails)) {
-    $disabled = 'disabled="disabled" ';
-} else {
-    $disabled = '';
-}
-$button = "<form method=\"post\" action=\"$CFG->wwwroot/blocks/quickmailjpn/emaillog.php\">
-               <input type=\"hidden\" name=\"id\" value=\"$course->id\" />
-               <input type=\"hidden\" name=\"instanceid\" value=\"$instanceid\" />
-               <input type=\"hidden\" name=\"sesskey\" value=\"".sesskey().'" />
-               <input type="hidden" name="action" value="confirm" />
-               <input type="submit" name="submit" value="'.get_string('clearhistory', 'block_quickmailjpn')."\" $disabled/>
-               </form>";
-    
-/// Header setup
-$PAGE->set_title($course->fullname.': '.$strquickmailjpn);
-$PAGE->set_heading($course->fullname);
-$PAGE->navbar->add($strquickmailjpn);
-
-echo $OUTPUT->header();
-
-echo $OUTPUT->heading($strquickmailjpn);
-    
-$currenttab = 'history';
-include($CFG->dirroot.'/blocks/quickmailjpn/tabs.php');
-    
-/// delete reporting happens here
-if ($action == 'dump') {
-    if ($dumpresult) {
-        notify(get_string('deletesuccess', 'block_quickmailjpn'), 'notifysuccess');
-    } else {
-        notify(get_string('deletefail', 'block_quickmailjpn'));
-    }
+$pastemails = $DB->get_records_sql($sql, $params, $table->get_page_start(), $table->get_page_size());
+$viewicon = new pix_icon('t/preview', get_string('view'));
+$deleteicon = new pix_icon('t/delete', get_string('delete'));
+$confirmaction = new confirm_action(get_string('confirmdelete', 'block_quickmailjpn'));
+foreach ($pastemails as $pastemail) {
+	$row = array();
+	$row[] = userdate($pastemail->timesent);
+	$row[] = s($pastemail->subject);
+	$row[] =
+		$OUTPUT->action_icon(
+				new moodle_url('/blocks/quickmailjpn/email.php', array(
+						'id' => $course->id,
+						'instanceid' => $instanceid,
+						'emailid' => $pastemail->id,
+						'action' => 'view'
+				)),
+				$viewicon
+		)
+		. $OUTPUT->action_icon(
+				new moodle_url('/blocks/quickmailjpn/email.php', array(
+						'id' => $course->id,
+						'instanceid' => $instanceid,
+						'sesskey' => sesskey(),
+						'action' => 'dump',
+						'emailid' => $pastemail->id
+				)),
+				$deleteicon,
+				$confirmaction
+		);
+	$table->add_data($row);
 }
 
-if ($action == 'confirm') {
-    notice_yesno(get_string('areyousure', 'block_quickmailjpn'), 
-                 "$CFG->wwwroot/blocks/quickmailjpn/emaillog.php?id=$course->id&amp;instanceid=$instanceid&amp;sesskey=".sesskey()."&amp;action=dump",
-                 "$CFG->wwwroot/blocks/quickmailjpn/emaillog.php?id=$course->id&amp;instanceid=$instanceid");
-} else {
-    echo '<div id="tablecontainer">';
-    $table->print_html();
-    echo '</div>';
-}
+$table->finish_output();
+echo $OUTPUT->container_end(); // #tablecontainer
 
 echo $OUTPUT->footer();

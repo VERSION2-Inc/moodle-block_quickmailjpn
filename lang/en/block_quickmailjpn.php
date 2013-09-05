@@ -1,4 +1,4 @@
-<?php // $Id: block_quickmailjpn.php 4 2012-04-28 18:19:08Z yama $ 
+<?php // $Id: block_quickmailjpn.php 4 2012-04-28 18:19:08Z yama $
       // block_quickmailjpn.php - created with Moodle 2.0 dev (2007101508)
 
 $string['action'] = 'Action';
@@ -12,6 +12,7 @@ $string['check'] = 'Check all';
 $string['chooseafile'] = 'Choose a file';
 $string['clearhistory'] = 'Clear all history';
 $string['compose'] = 'Compose';
+$string['confirmdelete'] = 'Are you sure you want to delete this email in your history?';
 $string['date'] = 'Date';
 $string['delete'] = 'Delete';
 $string['deletefail'] = 'Deletion failed.';
@@ -20,19 +21,19 @@ $string['email'] = 'email';
 $string['emailfail'] = 'email error:';
 $string['emailfailerror'] = 'Due to occurence of error the mail was not sent to the below-mentioned user...';
 $string['emailstop'] = 'Invalid email address:';
+$string['errornopermission'] = 'Sorry, you do not have the correct permissions to use QuickmailJPN.';
 $string['history'] = 'History';
 $string['log'] = 'Log';
 $string['messageerror'] = 'Please enter your message!';
 $string['nogroupmembers'] = 'No group members';
 $string['notingroup'] = 'Not in a group';
-$string['sendemail'] = 'Send email';
 $string['sendconfirmationemail'] = 'Send confirmation email';
+$string['sendemail'] = 'Send email';
 $string['subjecterror'] = 'Please enter the subject!';
 $string['successfulemail'] = 'Email has been sent successfully.';
 $string['to'] = 'To';
 $string['toerror'] = 'Please select the recipient for the email!';
 $string['uncheck'] = 'Uncheck all';
-$string['confirmdelete'] = 'Are you sure you want to delete this email in your history?';
 
 $string['allowstudents'] = 'Allow {$a} to use mobile quickmail'; // ORPHANED
 
