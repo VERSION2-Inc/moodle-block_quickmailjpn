@@ -112,7 +112,7 @@ class block_quickmailjpn extends block_list {
             return $this->content;
         }
 
-		$block_context = get_context_instance(CONTEXT_BLOCK, $this->instance->id);
+		$block_context = context_block::instance($this->instance->id);
 
 		if (has_capability('block/quickmailjpn:cansend', $block_context)) {
 			// 「作成」
@@ -245,7 +245,7 @@ class block_quickmailjpn extends block_list {
      * @return boolean True for access / False for denied
      **/
     function check_permission() {
-        return has_capability('block/quickmailjpn:cansend', get_context_instance(CONTEXT_BLOCK, $this->instance->id));
+        return has_capability('block/quickmailjpn:cansend', context_block::instance($this->instance->id));
     }
 
     /**

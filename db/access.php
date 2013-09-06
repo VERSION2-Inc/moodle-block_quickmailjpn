@@ -32,9 +32,7 @@
 
 
 $capabilities = array(
-
     'block/quickmailjpn:cansend' => array(
-
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'legacy' => array(
@@ -46,11 +44,19 @@ $capabilities = array(
     ),
 
     'block/quickmailjpn:view' => array(
-
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,
         'legacy' => array(
             'user' => CAP_ALLOW
+        )
+    ),
+
+    'block/quickmailjpn:manage' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'legacy' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
         )
     ),
 
