@@ -1,6 +1,7 @@
 <?php // $Id: block_quickmailjpn.php 4 2012-04-28 18:19:08Z yama $
       // block_quickmailjpn.php - created with Moodle 2.0 dev (2007101508)
 
+$string['sendmecopy'] = 'Send a copy of this message to me';
 $string['manageemailaddresses'] = 'Manage email addresses';
 $string['errornocourseusers'] = 'No course users found to email';
 $string['action'] = 'Action';

@@ -13,6 +13,7 @@
 
 require_once dirname(__FILE__).'/constants.php';
 require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
+
 use ver2\quickmailjpn\quickmailjpn as qm;
 
 /**
@@ -96,7 +97,7 @@ class block_quickmailjpn extends block_list {
      * @return object An object with an array of items, an array of icons, and a string for the footer
      **/
     function get_content() {
-        global $USER, $CFG, $DB, $OUTPUT;
+        global $USER, $CFG, $DB, $OUTPUT, $COURSE;
 
         if($this->content !== NULL) {
             return $this->content;
@@ -128,15 +129,18 @@ class block_quickmailjpn extends block_list {
 			// 「履歴」
 			$this->content->items[] = ' <a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/emaillog.php'.
 			                          '?id='.$this->course->id.'&amp;instanceid='.$this->instance->id.'">'.
-			                          get_string('history', 'block_quickmailjpn').'</a>'.
-			                          '<hr />';
+			                          get_string('history', 'block_quickmailjpn').'</a>';
 			$this->content->icons[]
                 = $OUTPUT->pix_icon('t/log', get_string('log', 'block_quickmailjpn'), 'moodle',
                                     array('width' => 16, 'height' => 16));
 
-			$this->content->items[] = $OUTPUT->action_link('/blocks/quickmailjpn/manageusers.php',
+			$this->content->items[] = $OUTPUT->action_link(
+					new moodle_url('/blocks/quickmailjpn/manageusers.php', ['course' => $COURSE->id]),
 					qm::str('manageemailaddresses'));
-			$this->content->icons[] = $OUTPUT->pix_icon('t/delete', 'del');
+			$this->content->icons[] = $OUTPUT->pix_icon('i/users', '');
+
+			$this->content->items[] = \html_writer::empty_tag('hr');
+			$this->content->icons[] = '';
 		}
 		if (has_capability('block/quickmailjpn:view', $block_context)) {
 			if (!empty($this->instance->pinned) || $this->instance->pagetypepattern == 'course-view-*') {
@@ -153,18 +157,23 @@ class block_quickmailjpn extends block_list {
 			$this->content->items[] = preg_replace('@<p>(.*?)</p>@is', '$1', $explanation);
 			$this->content->icons[] = null;
 
-			$qmuser = qm::get_user($USER->id);
+			$email_address = null;
+			$email_status = qm::STATUS_NOT_SET;
+			if ($qmuser = qm::get_user($USER->id)) {
+				$email_address = $qmuser->mobileemail;
+				$email_status = $qmuser->mobileemailstatus;
+			}
 
 // 			$email_status = $DB->get_field_sql(
 // 				'SELECT d.data FROM {user_info_data} d, {user_info_field} f'
 // 				.' WHERE d.userid = :userid AND d.fieldid = f.id'
 //                 .'   AND f.shortname = :shortname',
 //                 array('userid' => $USER->id, 'shortname' => QuickMailJPN_FieldName::STATUS));
-			$email_status = $qmuser->mobileemailstatus;
-			if (!$email_status) {
-				// データが見つからなければ「未設定」
-				$email_status = QuickMailJPN_State::NOT_SET;
-			}
+// 			$email_status = $qmuser->mobileemailstatus;
+// 			if (!$email_status) {
+// 				// データが見つからなければ「未設定」
+// 				$email_status = QuickMailJPN_State::NOT_SET;
+// 			}
             $classes = array(
                 QuickMailJPN_State::NOT_SET => 'status-notset',
                 QuickMailJPN_State::CHECKING => 'status-checking',
@@ -179,7 +188,7 @@ class block_quickmailjpn extends block_list {
 // 				.' WHERE d.userid = :userid AND d.fieldid = f.id'
 //                 .'   AND f.shortname = :shortname',
 //                 array('userid' => $USER->id, 'shortname' => QuickMailJPN_FieldName::EMAIL));
-			$email_address = $qmuser->mobileemail;
+// 			$email_address = $qmuser->mobileemail;
 			if ($email_address) {
 				$str_email_address = '[ '.$email_address.' ]<br />';
 			} else {

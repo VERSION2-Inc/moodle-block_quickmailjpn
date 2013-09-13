@@ -13,6 +13,9 @@ require_once($CFG->libdir.'/blocklib.php');
 require_once('./lib.php');
 require_once './constants.php';
 
+require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
+use ver2\quickmailjpn\quickmailjpn as qm;
+
 $id         = required_param('id', PARAM_INT);  // course ID
 $instanceid = optional_param('instanceid', 0, PARAM_INT);
 $action     = optional_param('action', '', PARAM_ALPHA);
@@ -63,8 +66,8 @@ if (!$courseusers = get_users_by_capability($context, 'moodle/grade:view', 'u.*'
 
 
 // カスタムフィールドIDを逆引き
-$userfield_email_id  = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::EMAIL));
-$userfield_status_id = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::STATUS));
+// $userfield_email_id  = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::EMAIL));
+// $userfield_status_id = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::STATUS));
 
 if ($action == 'view') {
     // viewing an old email.  Hitting the db and puting it into the object $form
@@ -112,13 +115,14 @@ if ($action == 'view') {
             // 携帯メールはMoodle本体のメールとは別機能なのでブロックしない
             //if (!$courseusers[$userid]->emailstop) {
 
-            $email = $DB->get_field('user_info_data', 'data', array('userid' => $userid, 'fieldid' => $userfield_email_id));
+//             $email = $DB->get_field('user_info_data', 'data', array('userid' => $userid, 'fieldid' => $userfield_email_id));
+//         	$email = qm::get_user_field($userid, 'mobileemail');
             if (empty($email)) {
                 // 未設定
                 continue;
             }
 
-            $status = $DB->get_field('user_info_data', 'data', array('userid' => $userid, 'fieldid' => $userfield_status_id));
+//             $status = $DB->get_field('user_info_data', 'data', array('userid' => $userid, 'fieldid' => $userfield_status_id));
             if ($status != QuickMailJPN_State::CONFIRMED) {
                 // 未チェック
                 continue;
@@ -148,6 +152,18 @@ if ($action == 'view') {
             //    $form->error = get_string('emailfailerror', 'block_quickmailjpn');
             //    $form->usersfail['emailstop'][] = $courseusers[$userid]->lastname.', '.$courseusers[$userid]->firstname;
             //}
+        }
+
+        if (!empty($form->sendmecopy)) {
+        	$mail = new JPHPMailer();
+        	$mail->addTo($form->mailfrom);
+        	$mail->setFrom($form->mailfrom, fullname($USER));
+        	$mail->setSubject($form->subject);
+        	$bodyText  = $courseusers[$userid]->username.' '.fullname($courseusers[$userid]).get_string('san', 'block_quickmailjpn')."\n\n";
+        	$bodyText .= $form->plaintxt;
+
+            $mail->setBody($bodyText);
+            $mailresult = $mail->send();
         }
 
         // cleanup - delete the uploaded file
@@ -224,11 +240,17 @@ mb_internal_encoding($prev_encoding);
 $i = 0;
 foreach ($courseusers as $user) {
     $i++;
-    $email  = $DB->get_field('user_info_data', 'data', array('userid' => $user->id, 'fieldid' => $userfield_email_id));
-    $status = $DB->get_field('user_info_data', 'data', array('userid' => $user->id, 'fieldid' => $userfield_status_id));
-    if (!$status) {
-        $status = QuickMailJPN_State::NOT_SET;
+//     $email  = $DB->get_field('user_info_data', 'data', array('userid' => $user->id, 'fieldid' => $userfield_email_id));
+//     $status = $DB->get_field('user_info_data', 'data', array('userid' => $user->id, 'fieldid' => $userfield_status_id));
+    $email = null;
+    $status = qm::STATUS_NOT_SET;
+    if ($qmuser = qm::get_user($user->id)) {
+    	$email = $qmuser->mobileemail;
+    	$status = $qmuser->mobileemailstatus;
     }
+//     if (!$status) {
+//         $status = QuickMailJPN_State::NOT_SET;
+//     }
     if (isset($form->mailto) && in_array($user->id, $form->mailto)) {
         $checked = 'checked="checked"';
     } else {

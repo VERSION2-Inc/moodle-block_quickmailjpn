@@ -34,8 +34,8 @@ function test(a) {
     <table border="0" cellpadding="5">
       <tr valign="top">
     <td align="right"><strong><?php print_string('to', 'block_quickmailjpn'); ?>:</strong></td>
-        <td align="left"> <a href="javascript:void(0);" onclick="block_quickmailjpn_toggle(true, 1, 0);"><?php print_string('selectall'); ?></a> 
-          / <a href="javascript:void(0);" onclick="block_quickmailjpn_toggle(false, 1, 0);"><?php print_string('deselectall'); ?></a> 
+        <td align="left"> <a href="javascript:void(0);" onclick="block_quickmailjpn_toggle(true, 1, 0);"><?php print_string('selectall'); ?></a>
+          / <a href="javascript:void(0);" onclick="block_quickmailjpn_toggle(false, 1, 0);"><?php print_string('deselectall'); ?></a>
           <br />
         <br />
         <?php echo $tblStr; ?>
@@ -61,10 +61,17 @@ function test(a) {
 
   <tr valign="top">
     <td align="right"><b><?php print_string('formattexttype'); ?>:</b></td>
-        <td align="left">Plain Text 
-          <?php 
+        <td align="left">Plain Text
+          <?php
         echo '<input type="hidden" name="format" value="'.FORMAT_PLAIN.'" />';
      ?>
+        </td>
+  </tr>
+  <tr valign="top">
+    <td align="right"></td>
+        <td align="left">
+        	<input type="checkbox" name="sendmecopy" id="sendmecopy">
+        	<label for="sendmecopy"><?php print_string('sendmecopy', 'block_quickmailjpn'); ?></label>
         </td>
   </tr>
   <tr>

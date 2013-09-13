@@ -10,10 +10,21 @@ class quickmailjpn {
 	const STATUS_CHECKING  = 'checking';
 	const STATUS_CONFIRMED = 'confirmed';
 
+	/**
+	 *
+	 * @param string $identifier
+	 * @param string $a
+	 * @return string
+	 */
 	public static function str($identifier, $a = null) {
 		return get_string($identifier, self::COMPONENT, $a);
 	}
 
+	/**
+	 *
+	 * @param int $userid
+	 * @return \stdClass
+	 */
 	public static function get_user($userid) {
 		global $DB;
 
@@ -58,8 +69,8 @@ class quickmailjpn {
 			$DB->update_record(self::TABLE_USERS, $user);
 		} else {
 			$user = (object)[
-				'userid' => $userid,
-				$field => $value
+			'userid' => $userid,
+			$field => $value
 			];
 			$DB->insert_record(self::TABLE_USERS, $user);
 		}
@@ -79,14 +90,22 @@ class quickmailjpn {
 			$DB->set_field(self::TABLE_USERS, 'mobileemail', $email, ['userid' => $userid]);
 		} else {
 			$user = (object)[
-				'userid' => $userid,
-				'mobileemail' => $email
+			'userid' => $userid,
+			'mobileemail' => $email
 			];
 			$DB->insert_record(self::TABLE_USERS, $user);
 		}
 	}
 
-	public static function set_state($userid, $state) {
-
+	/**
+	 *
+	 * @return string[]
+	 */
+	public static function get_status_options() {
+		return [
+				self::STATUS_CHECKING => self::str('checking'),
+				self::STATUS_CONFIRMED => self::str('confirmed'),
+				self::STATUS_NOT_SET => self::str('notyet')
+		];
 	}
 }

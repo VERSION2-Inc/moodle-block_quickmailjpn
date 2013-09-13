@@ -1,6 +1,8 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
+
+
 function block_quickmailjpn_autoload($classname) {
 	global $CFG;
 
