@@ -24,7 +24,10 @@ class page_manage_users extends page {
 	private function view() {
 		global $DB;
 
+		$this->set_title(qm::str('manageemailaddresses'));
+
 		echo $this->output->header();
+		echo $this->output->heading(qm::str('manageemailaddresses'));
 
 		$columns = ['name', 'mobileemail', 'mobileemailstatus', 'operations'];
 		$headers = [
@@ -35,6 +38,7 @@ class page_manage_users extends page {
 		];
 
 		$table = new \flexible_table('users');
+		$table->attributes = ['class' => 'generaltable boxaligncenter'];
 		$table->define_baseurl($this->url);
 		$table->define_columns($columns);
 		$table->define_headers($headers);
@@ -86,8 +90,9 @@ class page_manage_users extends page {
 		}
 
 		$qmuser = quickmailjpn::get_user($userid);
-
 		$form->set_data($qmuser);
+
+		$this->set_title(qm::str('manageemailaddresses'));
 
 		echo $this->output->header();
 		$form->display();

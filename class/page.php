@@ -52,6 +52,7 @@ abstract class page {
 		global $PAGE;
 
 		$PAGE->set_title($this->course->shortname . ': ' . $title);
+		$PAGE->navbar->add($title);
 	}
 
 	protected function require_manager() {

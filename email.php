@@ -167,9 +167,9 @@ if ($action == 'view') {
         }
 
         // cleanup - delete the uploaded file
-        if (isset($um) and file_exists($um->get_new_filepath())) {
-            unlink($um->get_new_filepath());
-        }
+//         if (isset($um) and file_exists($um->get_new_filepath())) {
+//             unlink($um->get_new_filepath());
+//         }
 
         // prepare an object for the insert_record function
         $log = new stdClass;
