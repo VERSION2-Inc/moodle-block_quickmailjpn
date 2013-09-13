@@ -12,6 +12,8 @@
  **/
 
 require_once dirname(__FILE__).'/constants.php';
+require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
+use ver2\quickmailjpn\quickmailjpn as qm;
 
 /**
  * This is the Quickmail block class.  Contains the necessary
@@ -30,54 +32,54 @@ class block_quickmailjpn extends block_list {
      *
      * @return void
      **/
-    function init_db() {
-    	global $DB;
+//     function init_db() {
+//     	global $DB;
 
-        if ($DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::EMAIL))
-            && $DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::STATUS))) {
-            return;
-        }
+//         if ($DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::EMAIL))
+//             && $DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::STATUS))) {
+//             return;
+//         }
 
-		$user_info_field = new stdClass();
-		$user_info_field->datatype    = 'text';
-		$user_info_field->categoryid  = 1;
-		$user_info_field->required    = 0;
-		$user_info_field->locked      = 0;
-		$user_info_field->forceunique = 0;
-		$user_info_field->signup      = 0;
-		$user_info_field->defaultdata = '';
-		$user_info_field->param1      = '30';
-		$user_info_field->param2      = '2048';
-		$user_info_field->param3      = '0';
-		$user_info_field->param4      = NULL;
-		$user_info_field->param5      = NULL;
+// 		$user_info_field = new stdClass();
+// 		$user_info_field->datatype    = 'text';
+// 		$user_info_field->categoryid  = 1;
+// 		$user_info_field->required    = 0;
+// 		$user_info_field->locked      = 0;
+// 		$user_info_field->forceunique = 0;
+// 		$user_info_field->signup      = 0;
+// 		$user_info_field->defaultdata = '';
+// 		$user_info_field->param1      = '30';
+// 		$user_info_field->param2      = '2048';
+// 		$user_info_field->param3      = '0';
+// 		$user_info_field->param4      = NULL;
+// 		$user_info_field->param5      = NULL;
 
- 		$max_sortorder = intval($DB->get_field_sql("SELECT MAX(sortorder) FROM {user_info_field}"));
+//  		$max_sortorder = intval($DB->get_field_sql("SELECT MAX(sortorder) FROM {user_info_field}"));
 
-		if (!$DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::EMAIL))) {
-			// email カスタムフィールドが存在しないので作成
-			$user_info_field->shortname   = QuickMailJPN_FieldName::EMAIL;
-			$user_info_field->name        = 'quickmailJPN_mobile_email';
-			$user_info_field->description = 'mobile_email';
-			$user_info_field->visible     = 1;
-			$user_info_field->sortorder   = ++$max_sortorder;
-			if (!$DB->insert_record('user_info_field', $user_info_field)) {
-				error('user_info_field can not be created.');
-			}
-		}
+// 		if (!$DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::EMAIL))) {
+// 			// email カスタムフィールドが存在しないので作成
+// 			$user_info_field->shortname   = QuickMailJPN_FieldName::EMAIL;
+// 			$user_info_field->name        = 'quickmailJPN_mobile_email';
+// 			$user_info_field->description = 'mobile_email';
+// 			$user_info_field->visible     = 1;
+// 			$user_info_field->sortorder   = ++$max_sortorder;
+// 			if (!$DB->insert_record('user_info_field', $user_info_field)) {
+// 				error('user_info_field can not be created.');
+// 			}
+// 		}
 
-		if (!$DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::STATUS))) {
-			// status カスタムフィールドが存在しないので作成
-			$user_info_field->shortname   = QuickMailJPN_FieldName::STATUS;
-			$user_info_field->name        = 'quickmailJPN_mobile_status';
-			$user_info_field->description = 'mobile_status';
-			$user_info_field->visible     = 0; // 非表示にしてユーザーが直接変更できないようにする
-			$user_info_field->sortorder   = ++$max_sortorder;
-			if (!$DB->insert_record('user_info_field', $user_info_field)) {
-				error('user_info_field can not be created.');
-			}
-    	}
-    }
+// 		if (!$DB->record_exists('user_info_field', array('shortname' => QuickMailJPN_FieldName::STATUS))) {
+// 			// status カスタムフィールドが存在しないので作成
+// 			$user_info_field->shortname   = QuickMailJPN_FieldName::STATUS;
+// 			$user_info_field->name        = 'quickmailJPN_mobile_status';
+// 			$user_info_field->description = 'mobile_status';
+// 			$user_info_field->visible     = 0; // 非表示にしてユーザーが直接変更できないようにする
+// 			$user_info_field->sortorder   = ++$max_sortorder;
+// 			if (!$DB->insert_record('user_info_field', $user_info_field)) {
+// 				error('user_info_field can not be created.');
+// 			}
+//     	}
+//     }
 
     /**
      * Sets the block name and version number
@@ -101,7 +103,7 @@ class block_quickmailjpn extends block_list {
         }
 
         // 必要ならuser_info_fieldの追加処理
-        $this->init_db();
+//         $this->init_db();
 
         $this->content = new stdClass();
         $this->content->footer = '';
@@ -131,6 +133,10 @@ class block_quickmailjpn extends block_list {
 			$this->content->icons[]
                 = $OUTPUT->pix_icon('t/log', get_string('log', 'block_quickmailjpn'), 'moodle',
                                     array('width' => 16, 'height' => 16));
+
+			$this->content->items[] = $OUTPUT->action_link('/blocks/quickmailjpn/manageusers.php',
+					qm::str('manageemailaddresses'));
+			$this->content->icons[] = $OUTPUT->pix_icon('t/delete', 'del');
 		}
 		if (has_capability('block/quickmailjpn:view', $block_context)) {
 			if (!empty($this->instance->pinned) || $this->instance->pagetypepattern == 'course-view-*') {
@@ -147,11 +153,14 @@ class block_quickmailjpn extends block_list {
 			$this->content->items[] = preg_replace('@<p>(.*?)</p>@is', '$1', $explanation);
 			$this->content->icons[] = null;
 
-			$email_status = $DB->get_field_sql(
-				'SELECT d.data FROM {user_info_data} d, {user_info_field} f'
-				.' WHERE d.userid = :userid AND d.fieldid = f.id'
-                .'   AND f.shortname = :shortname',
-                array('userid' => $USER->id, 'shortname' => QuickMailJPN_FieldName::STATUS));
+			$qmuser = qm::get_user($USER->id);
+
+// 			$email_status = $DB->get_field_sql(
+// 				'SELECT d.data FROM {user_info_data} d, {user_info_field} f'
+// 				.' WHERE d.userid = :userid AND d.fieldid = f.id'
+//                 .'   AND f.shortname = :shortname',
+//                 array('userid' => $USER->id, 'shortname' => QuickMailJPN_FieldName::STATUS));
+			$email_status = $qmuser->mobileemailstatus;
 			if (!$email_status) {
 				// データが見つからなければ「未設定」
 				$email_status = QuickMailJPN_State::NOT_SET;
@@ -165,11 +174,12 @@ class block_quickmailjpn extends block_list {
                 array('class' => $classes[$email_status]));
 			$str_email_status = get_string("block-$email_status", 'block_quickmailjpn', $str_email_status);
 
-			$email_address = $DB->get_field_sql(
-				'SELECT d.data FROM {user_info_data} d, {user_info_field} f'
-				.' WHERE d.userid = :userid AND d.fieldid = f.id'
-                .'   AND f.shortname = :shortname',
-                array('userid' => $USER->id, 'shortname' => QuickMailJPN_FieldName::EMAIL));
+// 			$email_address = $DB->get_field_sql(
+// 				'SELECT d.data FROM {user_info_data} d, {user_info_field} f'
+// 				.' WHERE d.userid = :userid AND d.fieldid = f.id'
+//                 .'   AND f.shortname = :shortname',
+//                 array('userid' => $USER->id, 'shortname' => QuickMailJPN_FieldName::EMAIL));
+			$email_address = $qmuser->mobileemail;
 			if ($email_address) {
 				$str_email_address = '[ '.$email_address.' ]<br />';
 			} else {
