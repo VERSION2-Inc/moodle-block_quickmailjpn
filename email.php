@@ -83,11 +83,6 @@ if ($action == 'view') {
         redirect("$CFG->wwwroot/course/view.php?id=$course->id");
     }
 
-    // prepare variables for email
-    $form->subject = stripslashes($form->subject);
-    $form->subject = clean_param(strip_tags($form->subject, '<lang><span>'), PARAM_RAW); // Strip all tags except multilang
-    $form->message = clean_param($form->message, PARAM_CLEANHTML);
-
     // make sure the user didn't miss anything
     if (!isset($form->mailto)) {
         $form->error = get_string('toerror', 'block_quickmailjpn');
@@ -163,9 +158,9 @@ if ($action == 'view') {
         $log->courseid   = $course->id;
         $log->userid     = $USER->id;
         $log->mailto     = implode(',', $mailedto);
-        $log->subject    = addslashes($form->subject);
-        $log->message    = addslashes($form->message);
-        $log->mailfrom   = addslashes($form->mailfrom);
+        $log->subject    = $form->subject;
+        $log->message    = $form->message;
+        $log->mailfrom   = $form->mailfrom;
         $log->timesent   = time();
 
         if (!$DB->insert_record('block_quickmailjpn_log', $log)) {
@@ -177,8 +172,6 @@ if ($action == 'view') {
             redirect("$CFG->wwwroot/course/view.php?id=$course->id", get_string('successfulemail', 'block_quickmailjpn'));
         }
     }
-    // so people can use quotes.  It will display correctly in the subject input text box
-    $form->subject = s($form->subject);
 
 } else {
     // set them as blank
