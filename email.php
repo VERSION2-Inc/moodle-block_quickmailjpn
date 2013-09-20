@@ -115,14 +115,11 @@ if ($action == 'view') {
             // 携帯メールはMoodle本体のメールとは別機能なのでブロックしない
             //if (!$courseusers[$userid]->emailstop) {
 
-//             $email = $DB->get_field('user_info_data', 'data', array('userid' => $userid, 'fieldid' => $userfield_email_id));
-//         	$email = qm::get_user_field($userid, 'mobileemail');
             if (empty($email)) {
                 // 未設定
                 continue;
             }
 
-//             $status = $DB->get_field('user_info_data', 'data', array('userid' => $userid, 'fieldid' => $userfield_status_id));
             if ($status != QuickMailJPN_State::CONFIRMED) {
                 // 未チェック
                 continue;
@@ -147,11 +144,6 @@ if ($action == 'view') {
                 // success
                 $mailedto[] = $userid;
             }
-            //} else {
-            //    // blocked email
-            //    $form->error = get_string('emailfailerror', 'block_quickmailjpn');
-            //    $form->usersfail['emailstop'][] = $courseusers[$userid]->lastname.', '.$courseusers[$userid]->firstname;
-            //}
         }
 
         if (!empty($form->sendmecopy)) {
@@ -165,11 +157,6 @@ if ($action == 'view') {
             $mail->setBody($bodyText);
             $mailresult = $mail->send();
         }
-
-        // cleanup - delete the uploaded file
-//         if (isset($um) and file_exists($um->get_new_filepath())) {
-//             unlink($um->get_new_filepath());
-//         }
 
         // prepare an object for the insert_record function
         $log = new stdClass;
@@ -240,17 +227,12 @@ mb_internal_encoding($prev_encoding);
 $i = 0;
 foreach ($courseusers as $user) {
     $i++;
-//     $email  = $DB->get_field('user_info_data', 'data', array('userid' => $user->id, 'fieldid' => $userfield_email_id));
-//     $status = $DB->get_field('user_info_data', 'data', array('userid' => $user->id, 'fieldid' => $userfield_status_id));
     $email = null;
     $status = qm::STATUS_NOT_SET;
     if ($qmuser = qm::get_user($user->id)) {
     	$email = $qmuser->mobileemail;
     	$status = $qmuser->mobileemailstatus;
     }
-//     if (!$status) {
-//         $status = QuickMailJPN_State::NOT_SET;
-//     }
     if (isset($form->mailto) && in_array($user->id, $form->mailto)) {
         $checked = 'checked="checked"';
     } else {

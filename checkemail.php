@@ -38,34 +38,6 @@ if ($instanceid) {
     }
 }
 
-/// This block of code ensures that QuickmailJPN will run
-///     whether it is in the course or not
-/*
-  if (empty($instance)) {
-  if (has_capability('block/quickmailjpn:view', get_context_instance(CONTEXT_BLOCK, $instanceid))) {
-  $haspermission = true;
-  } else {
-  $haspermission = false;
-  }
-  } else {
-  // create a quickmailjpn block instance
-  $quickmailjpn = block_instance('quickmailjpn', $instance);
-  $haspermission = $quickmailjpn->check_permission();
-  }
-
-  if (!$haspermission) {
-  error('Sorry, you do not have the correct permissions to use QuickmailJPN.');
-  }
-*/
-
-// カスタムフィールドIDを逆引き
-// $userfield_email_id  = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::EMAIL));
-// $userfield_status_id = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::STATUS));
-
-//get USER's mobile e-mail address from user_info_data
-// $userdata_email = $DB->get_record('user_info_data', array('userid' => $USER->id, 'fieldid' => $userfield_email_id));
-
-
 $confirmResult = "";
 
 $mobileemail = ''; // checkemail.html
@@ -75,28 +47,6 @@ if (!empty($userdata_email)) {
 
 if ($form = data_submitted()) do {
         //data submitted
-        //save mobile e-mail address into user_info_data
-//         if (empty($userdata_email)) {
-//             // 未登録 → 作成
-//             $userdata_email = new stdClass();
-//             $userdata_email->userid  = $USER->id;
-//             $userdata_email->fieldid = $userfield_email_id;
-//             $userdata_email->data    = $form->mobileemail;
-//             if (!$DB->insert_record("user_info_data", $userdata_email)) {
-//                 print_error("Could not insert your user_info_data");
-//             }
-//         } else {
-//             // 登録済 → 更新
-//             if ($userdata_email->data == $form->mobileemail) {
-//                 // 二重送信 → スキップ
-//                 //break;
-//                 redirect($CFG->wwwroot.'/blocks/quickmailjpn/checkemail.php?id='.$id.'&instanceid='.$instanceid);
-//             }
-//             $userdata_email->data = $form->mobileemail;
-//             if (!$DB->update_record("user_info_data", $userdata_email)) {
-//                 print_error("Could not update your user_info_data");
-//             }
-//         }
 	$userid = $USER->id;
 	qm::set_user_field($userid, 'mobileemail', $form->mobileemail);
 
@@ -105,8 +55,6 @@ if ($form = data_submitted()) do {
         if (empty($mobileemail)) {
             // 入力欄を空で送信するとメール設定解除
             qm::set_user_field($userid, 'mobileemailstatus', qm::STATUS_NOT_SET);
-//             $DB->set_field('user_info_data', 'data', QuickMailJPN_State::NOT_SET,
-//                            array('userid' => $USER->id, 'fieldid' => $userfield_status_id));
         } else {
             $confirmResult = get_string('sentcheckemail', 'block_quickmailjpn');
 
@@ -116,14 +64,11 @@ if ($form = data_submitted()) do {
             mb_internal_encoding("UTF-8");
 
             //prepare e-mail data
-//             $svr = $_SERVER["SERVER_NAME"];
-//             $pth = dirname($_SERVER["SCRIPT_NAME"]);
 
             $key = makePassword(7);
             $encKey = md5($key);
 
             $text = $CFG->block_quickmailjpn_email_message."\n"
-//                 . "http://".$svr.$pth."/confirm.php?id=".$USER->id."&key=".$encKey;
             	.(new moodle_url('/blocks/quickmailjpn/confirm.php', [
             			'id' => $userid,
             			'key' => $encKey
@@ -145,33 +90,11 @@ if ($form = data_submitted()) do {
             $mail->send();
 
             // save status to block_quickmailjpn_status
-//             if ($key_status = $DB->get_record('block_quickmailjpn_key', array('userid' => $USER->id))) {
-//                 $key_status->email_key = $key;
-//                 $DB->update_record('block_quickmailjpn_key', $key_status);
-//             } else {
-//                 $key_status = new stdClass();
-//                 $key_status->userid    = $USER->id;
-//                 $key_status->email_key = $key;
-//                 $DB->insert_record('block_quickmailjpn_key', $key_status);
-//             }
             qm::set_user([
             	'userid' => $userid,
             	'mobileemailauthkey' => $key,
             	'mobileemailstatus' => qm::STATUS_CHECKING
         	]);
-
-//             if ($userdata_status = $DB->get_record('user_info_data',
-//                                                    array('userid' => $USER->id, 'fieldid' => $userfield_status_id)))
-//             {
-//                 $userdata_status->data = QuickMailJPN_State::CHECKING;
-//                 $DB->update_record('user_info_data', $userdata_status);
-//             } else {
-//                 $userdata_status = new stdClass();
-//                 $userdata_status->userid  = $USER->id;
-//                 $userdata_status->fieldid = $userfield_status_id;
-//                 $userdata_status->data    = QuickMailJPN_State::CHECKING;
-//                 $DB->insert_record('user_info_data', $userdata_status);
-//             }
 
             //return to original internal_encoding
             mb_internal_encoding($orgEncoding);
