@@ -1,9 +1,6 @@
 <?php // $Id: block_quickmailjpn.php 4 2012-04-28 18:19:08Z yama $
       // block_quickmailjpn.php - created with Moodle 2.0 dev (2007101508)
 
-$string['sendmecopy'] = 'Send a copy of this message to me';
-$string['manageemailaddresses'] = 'Manage email addresses';
-$string['errornocourseusers'] = 'No course users found to email';
 $string['action'] = 'Action';
 $string['areyousure'] = 'Are you sure you want to delete all emails in your history?';
 $string['attachment'] = 'Attachment';
@@ -24,9 +21,11 @@ $string['email'] = 'email';
 $string['emailfail'] = 'email error:';
 $string['emailfailerror'] = 'Due to occurence of error the mail was not sent to the below-mentioned user...';
 $string['emailstop'] = 'Invalid email address:';
+$string['errornocourseusers'] = 'No course users found to email';
 $string['errornopermission'] = 'Sorry, you do not have the correct permissions to use QuickmailJPN.';
 $string['history'] = 'History';
 $string['log'] = 'Log';
+$string['manageemailaddresses'] = 'Manage email addresses';
 $string['messageerror'] = 'Please enter your message!';
 $string['nogroupmembers'] = 'No group members';
 $string['notingroup'] = 'Not in a group';
@@ -34,6 +33,7 @@ $string['quickmailjpn:addinstance'] = 'Add a new QuickmailJPN block';
 $string['quickmailjpn:manage'] = 'Manage QuickmailJPN block';
 $string['sendconfirmationemail'] = 'Send confirmation email';
 $string['sendemail'] = 'Send email';
+$string['sendmecopy'] = 'Send a copy of this message to me';
 $string['subjecterror'] = 'Please enter the subject!';
 $string['successfulemail'] = 'Email has been sent successfully.';
 $string['to'] = 'To';

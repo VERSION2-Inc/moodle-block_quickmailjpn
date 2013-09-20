@@ -21,14 +21,17 @@ $string['email'] = 'メール';
 $string['emailfail'] = 'メールエラー:';
 $string['emailfailerror'] = 'エラーが発生したため、下記のユーザにメール送信されませんでした ...';
 $string['emailstop'] = 'メールアドレスが無効にされています:';
+$string['errornocourseusers'] = '送信対象ユーザがコースに見つかりません';
 $string['errornopermission'] = '申し訳ありません。クイック携帯メールJPNを利用する権限がありません。';
 $string['history'] = '履歴';
 $string['log'] = 'ログ';
+$string['manageemailaddresses'] = 'メールアドレス管理';
 $string['messageerror'] = 'メッセージを入力してください!';
 $string['nogroupmembers'] = 'グループメンバーなし';
 $string['notingroup'] = 'グループ外';
 $string['sendconfirmationemail'] = '確認メールを送信する';
 $string['sendemail'] = 'メールを送信する';
+$string['sendmecopy'] = 'メッセージのコピーを自分に送信する';
 $string['subjecterror'] = '題名を入力してください!';
 $string['successfulemail'] = 'メールが正常に送信されました。';
 $string['to'] = 'To';
@@ -57,10 +60,11 @@ $string['sentcheckemail'] = '携帯へメールが送信されました。携帯
 $string['presentstatus'] = '現在の状態：';
 $string['statusexplanation'] = '<ol class="statusexplanation">
 <li>携帯メールアドレスを入力して確認メールを送信してください。<br />
-<small>（携帯メールが無ければ普段使用するメールアドレスを入力してください。）</small></li>
+（携帯メールが無ければ普段使用するメールアドレスを入力してください。）</li>
 <li>携帯に送られたメールのリンクを開いて確認を完了してください。</li>
 <p>携帯のメールアドレスが変わった場合は新しいアドレスを上記操作で再登録してください。</p>
-<p><small>※メールフィルタを設定している方は、{$a} からのメールを許可するように事前に設定してください。</small></p>';
+<p>※メールフィルタを設定している方は、{$a} からのメールを許可するように事前に設定してください。</p>
+<p>メールフィルタの設定方法: <a href="http://www.nttdocomo.co.jp/info/spam_mail/measure/domain/" target="_blank">Docomo</a>, <a href="http://www.au.kddi.com/support/mobile/trouble/forestalling/mail/anti-spam/fillter/" target="_blank">au</a>';
 $string['select'] = '選択';
 $string['name'] = '名前';
 $string['status'] = '状態';

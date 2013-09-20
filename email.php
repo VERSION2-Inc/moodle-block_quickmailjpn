@@ -50,6 +50,7 @@ if (empty($instance)) {
     }
 } else {
     // create a quickmailjpn block instance
+    /* @var $quickmailjpn block_quickmailjpn */
     $quickmailjpn = block_instance('quickmailjpn', $instance);
 
     $groupmode     = $quickmailjpn->groupmode();
@@ -64,10 +65,6 @@ if (!$courseusers = get_users_by_capability($context, 'moodle/grade:view', 'u.*'
 	print_error('errornocourseusers', 'block_quickmailjpn');
 }
 
-
-// カスタムフィールドIDを逆引き
-// $userfield_email_id  = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::EMAIL));
-// $userfield_status_id = $DB->get_field('user_info_field', 'id', array('shortname' => QuickMailJPN_FieldName::STATUS));
 
 if ($action == 'view') {
     // viewing an old email.  Hitting the db and puting it into the object $form
