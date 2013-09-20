@@ -174,7 +174,7 @@ foreach ($pastemails as $pastemail) {
 				$viewicon
 		)
 		. $OUTPUT->action_icon(
-				new moodle_url('/blocks/quickmailjpn/email.php', array(
+				new moodle_url('/blocks/quickmailjpn/emaillog.php', array(
 						'id' => $course->id,
 						'instanceid' => $instanceid,
 						'sesskey' => sesskey(),
