@@ -107,7 +107,9 @@ if ($action == 'view') {
             // 携帯メールはMoodle本体のメールとは別機能なのでブロックしない
             //if (!$courseusers[$userid]->emailstop) {
 
-        	$email = $DB->get_field(qm::TABLE_USERS, 'mobileemail', ['userid' => $userid]);
+        	$userinfo = $DB->get_record(qm::TABLE_USERS, ['userid' => $userid]);
+        	$email = $userinfo->mobileemail;
+        	$status = $userinfo->mobileemailstatus;
 
             if (empty($email)) {
                 // 未設定
