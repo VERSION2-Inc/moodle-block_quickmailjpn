@@ -9,6 +9,6 @@
 
 defined('MOODLE_INTERNAL') || exit();
 
-$plugin->version   = 2013092702;
+$plugin->version   = 2013092703;
 $plugin->requires  = 2011112900;
 $plugin->component = 'block_quickmailjpn';

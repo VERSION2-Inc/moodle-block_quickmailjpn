@@ -83,7 +83,9 @@ class page_manage_users extends page {
 				'user' => $user
 		]);
 
-		if ($form->is_submitted()) {
+		if ($form->is_cancelled()) {
+			redirect($this->url);
+		} else if ($form->is_submitted()) {
 			$data = $form->get_data();
 			qm::set_user($data);
 			redirect($this->url);
