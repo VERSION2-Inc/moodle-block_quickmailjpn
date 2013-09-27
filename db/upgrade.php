@@ -66,12 +66,12 @@ function xmldb_block_quickmailjpn_upgrade($oldversion = 0) {
 				}
 				$DB->insert_record('block_quickmailjpn_users', $row);
 			}
-		}
 
-		$DB->delete_records('user_info_data', ['fieldid' => $emailfieldid]);
-		$DB->delete_records('user_info_data', ['fieldid' => $statusfieldid]);
-		$DB->delete_records('user_info_field', ['id' => $emailfieldid]);
-		$DB->delete_records('user_info_field', ['id' => $statusfieldid]);
+			$DB->delete_records('user_info_data', ['fieldid' => $emailfieldid]);
+			$DB->delete_records('user_info_data', ['fieldid' => $statusfieldid]);
+			$DB->delete_records('user_info_field', ['id' => $emailfieldid]);
+			$DB->delete_records('user_info_field', ['id' => $statusfieldid]);
+		}
 
         // Quickmailjpn savepoint reached.
         upgrade_block_savepoint(true, 2013092700, 'quickmailjpn');
