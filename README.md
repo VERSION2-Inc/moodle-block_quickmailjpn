@@ -21,7 +21,7 @@ The features include:
 Requirements
 ------------
 
-Moodle 2.0 to 2.3 (maybe work on 2.4 but not tested yet)
+Moodle 2.0 to 2.5
 
 
 License
