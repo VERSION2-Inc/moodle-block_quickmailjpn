@@ -31,11 +31,11 @@ abstract class page {
 		global $DB, $PAGE, $OUTPUT;
 
 		$courseid = required_param('course', PARAM_INT);
-		$this->course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+		$this->course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 		$this->context = \context_course::instance($this->course->id);
 
 		require_login($courseid);
-		$this->url = new \moodle_url($url, ['course' => $this->course->id]);
+		$this->url = new \moodle_url($url, array('course' => $this->course->id));
 		$PAGE->set_url($this->url);
 		$PAGE->set_heading($this->course->fullname);
 

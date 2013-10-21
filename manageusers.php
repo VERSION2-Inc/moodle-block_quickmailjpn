@@ -29,16 +29,16 @@ class page_manage_users extends page {
 		echo $this->output->header();
 		echo $this->output->heading(qm::str('manageemailaddresses'));
 
-		$columns = ['name', 'mobileemail', 'mobileemailstatus', 'operations'];
-		$headers = [
+		$columns = array('name', 'mobileemail', 'mobileemailstatus', 'operations');
+		$headers = array(
 			qm::str('name'),
 			qm::str('mobilephone'),
 			qm::str('status'),
 			''
-		];
+		);
 
 		$table = new \flexible_table('users');
-		$table->attributes = ['class' => 'generaltable boxaligncenter'];
+		$table->attributes = array('class' => 'generaltable boxaligncenter');
 		$table->define_baseurl($this->url);
 		$table->define_columns($columns);
 		$table->define_headers($headers);
@@ -53,19 +53,19 @@ class page_manage_users extends page {
 
 			$mobileemail = '';
 			$mobileemailstatus = qm::STATUS_NOT_SET;
-			$qmuser = $DB->get_record(table::USERS, ['userid' => $user->id]);
+			$qmuser = $DB->get_record(table::USERS, array('userid' => $user->id));
 			if ($qmuser) {
 				$mobileemail = $qmuser->mobileemail;
 				$mobileemailstatus = $qmuser->mobileemailstatus;
 			}
 			$buttons = $this->output->action_icon(
-					new \moodle_url($this->url, ['mode' => 'edit', 'userid' => $userid]), $editicon);
-			$table->add_data([
+					new \moodle_url($this->url, array('mode' => 'edit', 'userid' => $userid)), $editicon);
+			$table->add_data(array(
 					fullname($user),
 					$mobileemail,
 					$statusstr[$mobileemailstatus],
 					$buttons
-			]);
+			));
 		}
 		$table->finish_output();
 
@@ -76,12 +76,12 @@ class page_manage_users extends page {
 		global $DB;
 
 		$userid = required_param('userid', PARAM_INT);
-		$user = $DB->get_record('user', ['id' => $userid]);
+		$user = $DB->get_record('user', array('id' => $userid));
 
-		$form = new form_edit_user(null, (object)[
+		$form = new form_edit_user(null, (object)array(
 				'course' => $this->course->id,
 				'user' => $user
-		]);
+		));
 
 		if ($form->is_cancelled()) {
 			redirect($this->url);

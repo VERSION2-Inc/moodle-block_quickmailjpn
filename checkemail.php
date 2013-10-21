@@ -68,11 +68,8 @@ if ($form = data_submitted()) do {
             $key = makePassword(7);
             $encKey = md5($key);
 
-            $text = $CFG->block_quickmailjpn_email_message."\n"
-            	.(new moodle_url('/blocks/quickmailjpn/confirm.php', [
-            			'id' => $userid,
-            			'key' => $encKey
-        		]))->out(false);
+            $confirmurl = new moodle_url('/blocks/quickmailjpn/confirm.php', array('id' => $userid, 'key' => $encKey));
+            $text = $CFG->block_quickmailjpn_email_message."\n".$confirmurl->out(false);
 
             //from address
             $from = $CFG->block_quickmailjpn_email;
@@ -90,11 +87,11 @@ if ($form = data_submitted()) do {
             $mail->send();
 
             // save status to block_quickmailjpn_status
-            qm::set_user([
+            qm::set_user(array(
             	'userid' => $userid,
             	'mobileemailauthkey' => $key,
             	'mobileemailstatus' => qm::STATUS_CHECKING
-        	]);
+        	));
 
             //return to original internal_encoding
             mb_internal_encoding($orgEncoding);

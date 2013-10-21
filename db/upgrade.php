@@ -35,8 +35,8 @@ function xmldb_block_quickmailjpn_upgrade($oldversion = 0) {
             $dbman->create_table($table);
         }
 
-		$emailfieldid = $DB->get_field('user_info_field', 'id', ['shortname' => 'quickmailJPNmobileemail']);
-		$statusfieldid = $DB->get_field('user_info_field', 'id', ['shortname' => 'quickmailJPNmobilestatus']);
+		$emailfieldid = $DB->get_field('user_info_field', 'id', array('shortname' => 'quickmailJPNmobileemail'));
+		$statusfieldid = $DB->get_field('user_info_field', 'id', array('shortname' => 'quickmailJPNmobilestatus'));
 
 		if ($emailfieldid && $statusfieldid) {
 			$oldemails = $DB->get_records_sql('
@@ -44,14 +44,14 @@ function xmldb_block_quickmailjpn_upgrade($oldversion = 0) {
 					FROM {user_info_data} uid
 					WHERE uid.fieldid = :fieldid
 					',
-					['fieldid' => $emailfieldid]
+					array('fieldid' => $emailfieldid)
 			);
 			$oldstatuses = $DB->get_records_sql('
 					SELECT uid.userid, uid.data
 					FROM {user_info_data} uid
 					WHERE uid.fieldid = :fieldid
 					',
-					['fieldid' => $statusfieldid]
+					array('fieldid' => $statusfieldid)
 			);
 			foreach ($oldemails as $oldemail) {
 				if (empty($oldemail->data)) {
@@ -67,10 +67,10 @@ function xmldb_block_quickmailjpn_upgrade($oldversion = 0) {
 				$DB->insert_record('block_quickmailjpn_users', $row);
 			}
 
-			$DB->delete_records('user_info_data', ['fieldid' => $emailfieldid]);
-			$DB->delete_records('user_info_data', ['fieldid' => $statusfieldid]);
-			$DB->delete_records('user_info_field', ['id' => $emailfieldid]);
-			$DB->delete_records('user_info_field', ['id' => $statusfieldid]);
+			$DB->delete_records('user_info_data', array('fieldid' => $emailfieldid));
+			$DB->delete_records('user_info_data', array('fieldid' => $statusfieldid));
+			$DB->delete_records('user_info_field', array('id' => $emailfieldid));
+			$DB->delete_records('user_info_field', array('id' => $statusfieldid));
 		}
 
         // Quickmailjpn savepoint reached.
