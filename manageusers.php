@@ -83,7 +83,6 @@ class page_manage_users extends page {
 				'user' => $user
 		]);
 
-		$errors = [];
 		if ($form->is_cancelled()) {
 			redirect($this->url);
 		} else if ($form->is_submitted() && $form->is_validated()) {
