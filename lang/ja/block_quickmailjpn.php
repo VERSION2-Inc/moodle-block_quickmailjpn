@@ -24,6 +24,7 @@ $string['emailstop'] = 'メールアドレスが無効にされています:';
 $string['errornocourseusers'] = '送信対象ユーザがコースに見つかりません';
 $string['errornopermission'] = '申し訳ありません。クイック携帯メールJPNを利用する権限がありません。';
 $string['history'] = '履歴';
+$string['invalidaddress'] = 'メールアドレスが正しくありません';
 $string['log'] = 'ログ';
 $string['manageemailaddresses'] = 'メールアドレス管理';
 $string['messageerror'] = 'メッセージを入力してください!';

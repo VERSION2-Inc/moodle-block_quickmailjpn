@@ -83,9 +83,10 @@ class page_manage_users extends page {
 				'user' => $user
 		]);
 
+		$errors = [];
 		if ($form->is_cancelled()) {
 			redirect($this->url);
-		} else if ($form->is_submitted()) {
+		} else if ($form->is_submitted() && $form->is_validated()) {
 			$data = $form->get_data();
 			qm::set_user($data);
 			redirect($this->url);
@@ -123,6 +124,20 @@ class form_edit_user extends \moodleform {
 
 		$this->add_action_buttons();
 	}
+
+    /**
+     * @param array $data array of ("fieldname"=>value) of submitted data
+     * @param array $files array of uploaded files "element_name"=>tmp_file_path
+     * @return array of "element_name"=>"error_description" if there are errors,
+     *         or an empty array if everything is OK (true allowed for backwards compatibility too).
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        if (empty($data['mobileemail'])) {
+            $errors['mobileemail'] = qm::str('invalidaddress');
+        }
+        return $errors;
+    }
 }
 
 $page = new page_manage_users('/blocks/quickmailjpn/manageusers.php');
