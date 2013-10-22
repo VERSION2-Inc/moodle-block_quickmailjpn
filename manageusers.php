@@ -95,6 +95,9 @@ class page_manage_users extends page {
 			redirect($this->url);
 		} else if ($form->is_submitted() && $form->is_validated()) {
 			$data = $form->get_data();
+			if (empty($data->mobileemail)) {
+				$data->mobileemailstatus = quickmailjpn::STATUS_NOT_SET;
+			}
 			qm::set_user($data);
 			redirect($this->url);
 		}
@@ -140,6 +143,9 @@ class form_edit_user extends \moodleform {
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
+        if (!empty($data['mobileemail']) && !\validate_email($data['mobileemail'])) {
+            $errors['mobileemail'] = qm::str('invalidaddress');
+        }
         return $errors;
     }
 }

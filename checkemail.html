@@ -2,6 +2,9 @@
 <table cellpadding="10" cellspacing="0" class="generalbox">
   <tr>
     <td align="right">
+     <?php if (!empty($errormessage)) {
+        echo '<p style="text-align:right; color:red;">', $errormessage, '</p>';
+     } ?>
      <?php print_string('entermobilephone', 'block_quickmailjpn') ?>
      <input type="text" name="mobileemail" size="40" value="<?php p($mobileemail); ?>" />
     </td>

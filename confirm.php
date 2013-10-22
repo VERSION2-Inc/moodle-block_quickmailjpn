@@ -35,11 +35,11 @@ if (!$qmuser) {
 }
 
 if ( !$err ) {
-	qm::set_user([
+	qm::set_user(array(
 		'userid' => $user->id,
 		'mobileemailstatus' => qm::STATUS_CONFIRMED,
 		'mobileemailauthkey' => null
-	]);
+	));
 }
 
 header('Content-type: text/html; charset=Shift_JIS');

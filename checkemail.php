@@ -55,6 +55,8 @@ if ($form = data_submitted()) do {
         if (empty($mobileemail)) {
             // 入力欄を空で送信するとメール設定解除
             qm::set_user_field($userid, 'mobileemailstatus', qm::STATUS_NOT_SET);
+        } elseif (!validate_email($mobileemail)) {
+            $errormessage = qm::str('invalidaddress');
         } else {
             $confirmResult = get_string('sentcheckemail', 'block_quickmailjpn');
 
@@ -90,11 +92,11 @@ if ($form = data_submitted()) do {
             $mail->send();
 
             // save status to block_quickmailjpn_status
-            qm::set_user([
+            qm::set_user(array(
             	'userid' => $userid,
             	'mobileemailauthkey' => $key,
             	'mobileemailstatus' => qm::STATUS_CHECKING
-        	]);
+        	));
 
             //return to original internal_encoding
             mb_internal_encoding($orgEncoding);

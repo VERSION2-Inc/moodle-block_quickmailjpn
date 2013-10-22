@@ -53,10 +53,6 @@ class quickmailjpn {
 			throw new \coding_exception('useridを指定してください。');
 		}
 
-		if ($user->mobileemail === '') {
-			$user->mobileemailstatus = quickmailjpn::STATUS_NOT_SET;
-		}
-
 		if ($olduser = $DB->get_record(self::TABLE_USERS, array('userid' => $user->userid))) {
 			$user->id = $olduser->id;
 			$DB->update_record(self::TABLE_USERS, $user);
