@@ -24,6 +24,7 @@ $string['emailstop'] = 'Invalid email address:';
 $string['errornocourseusers'] = 'No course users found to email';
 $string['errornopermission'] = 'Sorry, you do not have the correct permissions to use QuickmailJPN.';
 $string['history'] = 'History';
+$string['invalidaddress'] = 'Invalid email address';
 $string['log'] = 'Log';
 $string['manageemailaddresses'] = 'Manage email addresses';
 $string['messageerror'] = 'Please enter your message!';

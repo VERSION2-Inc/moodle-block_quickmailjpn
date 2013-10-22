@@ -31,16 +31,16 @@ class page_manage_users extends page {
 
 		echo groups_print_course_menu($this->course, $this->url);
 
-		$columns = ['name', 'mobileemail', 'mobileemailstatus', 'operations'];
-		$headers = [
+		$columns = array('name', 'mobileemail', 'mobileemailstatus', 'operations');
+		$headers = array(
 			qm::str('name'),
 			qm::str('mobilephone'),
 			qm::str('status'),
 			''
-		];
+		);
 
 		$table = new \flexible_table('users');
-		$table->attributes = ['class' => 'generaltable boxaligncenter'];
+		$table->attributes = array('class' => 'generaltable boxaligncenter');
 		$table->define_baseurl($this->url);
 		$table->define_columns($columns);
 		$table->define_headers($headers);
@@ -55,19 +55,19 @@ class page_manage_users extends page {
 
 			$mobileemail = '';
 			$mobileemailstatus = qm::STATUS_NOT_SET;
-			$qmuser = $DB->get_record(table::USERS, ['userid' => $user->id]);
+			$qmuser = $DB->get_record(table::USERS, array('userid' => $user->id));
 			if ($qmuser) {
 				$mobileemail = $qmuser->mobileemail;
 				$mobileemailstatus = $qmuser->mobileemailstatus;
 			}
 			$buttons = $this->output->action_icon(
-					new \moodle_url($this->url, ['mode' => 'edit', 'userid' => $userid]), $editicon);
-			$table->add_data([
+					new \moodle_url($this->url, array('mode' => 'edit', 'userid' => $userid)), $editicon);
+			$table->add_data(array(
 					fullname($user),
 					$mobileemail,
 					$statusstr[$mobileemailstatus],
 					$buttons
-			]);
+			));
 		}
 		$table->finish_output();
 
@@ -78,16 +78,16 @@ class page_manage_users extends page {
 		global $DB;
 
 		$userid = required_param('userid', PARAM_INT);
-		$user = $DB->get_record('user', ['id' => $userid]);
+		$user = $DB->get_record('user', array('id' => $userid));
 
-		$form = new form_edit_user(null, (object)[
+		$form = new form_edit_user(null, (object)array(
 				'course' => $this->course->id,
 				'user' => $user
-		]);
+		));
 
 		if ($form->is_cancelled()) {
 			redirect($this->url);
-		} else if ($form->is_submitted()) {
+		} else if ($form->is_submitted() && $form->is_validated()) {
 			$data = $form->get_data();
 			qm::set_user($data);
 			redirect($this->url);
@@ -125,6 +125,20 @@ class form_edit_user extends \moodleform {
 
 		$this->add_action_buttons();
 	}
+
+    /**
+     * @param array $data array of ("fieldname"=>value) of submitted data
+     * @param array $files array of uploaded files "element_name"=>tmp_file_path
+     * @return array of "element_name"=>"error_description" if there are errors,
+     *         or an empty array if everything is OK (true allowed for backwards compatibility too).
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        if (empty($data['mobileemail'])) {
+            $errors['mobileemail'] = qm::str('invalidaddress');
+        }
+        return $errors;
+    }
 }
 
 $page = new page_manage_users('/blocks/quickmailjpn/manageusers.php');
