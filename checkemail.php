@@ -70,11 +70,8 @@ if ($form = data_submitted()) do {
             $key = makePassword(7);
             $encKey = md5($key);
 
-            $text = $CFG->block_quickmailjpn_email_message."\n"
-            	.(new moodle_url('/blocks/quickmailjpn/confirm.php', [
-            			'id' => $userid,
-            			'key' => $encKey
-        		]))->out(false);
+            $confirmurl = new moodle_url('/blocks/quickmailjpn/confirm.php', array('id' => $userid, 'key' => $encKey));
+            $text = $CFG->block_quickmailjpn_email_message."\n".$confirmurl->out(false);
 
             //from address
             $from = $CFG->block_quickmailjpn_email;

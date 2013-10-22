@@ -78,7 +78,7 @@ class block_quickmailjpn extends block_list {
                                     array('width' => 16, 'height' => 16));
 
 			$this->content->items[] = $OUTPUT->action_link(
-					new moodle_url('/blocks/quickmailjpn/manageusers.php', ['course' => $COURSE->id]),
+					new moodle_url('/blocks/quickmailjpn/manageusers.php', array('course' => $COURSE->id)),
 					qm::str('manageemailaddresses'));
 			$this->content->icons[] = $OUTPUT->pix_icon('i/users', '');
 

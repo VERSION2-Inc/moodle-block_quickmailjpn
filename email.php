@@ -198,9 +198,7 @@ $tblStr .= "<th>".get_string('status', 'block_quickmailjpn')."</th>";
 $tblStr .= "</tr>\n";
 
 // フルネーム順にソートするために先にフルネームを取得してプロパティ追加
-array_walk($courseusers, create_function('$u', '
-        $u->fullname = fullname($u);
-    '));
+array_walk($courseusers, function ($u) { $u->fullname = fullname($u); });
 
 // 設定に従ってソート
 // TODO: 拡張フィールドによるソートにも対応させる
@@ -217,9 +215,9 @@ $prev_encoding = mb_internal_encoding();
 {
     mb_internal_encoding('utf-8'); // ソート順のエンコーディングを指定
 
-    uasort($courseusers, create_function('$lhs,$rhs', '
-            return strnatcasecmp($lhs->'.$order.', $rhs->'.$order.');
-        '));
+    uasort($courseusers, function ($lhs, $rhs) use ($order) {
+        return strnatcasecmp($lhs->{$order}, $rhs->{$order});
+    });
 }
 mb_internal_encoding($prev_encoding);
 
@@ -307,10 +305,10 @@ if (isset($form->error)) {
 $currenttab = 'compose';
 include($CFG->dirroot.'/blocks/quickmailjpn/tabs.php');
 
-echo groups_print_course_menu($course, new \moodle_url($PAGE->url, [
+echo groups_print_course_menu($course, new \moodle_url($PAGE->url, array(
         'id' => $id,
 		'instanceid' => $instanceid
-]));
+)));
 
 echo $OUTPUT->box_start('center');
 require($CFG->dirroot.'/blocks/quickmailjpn/email.html');
