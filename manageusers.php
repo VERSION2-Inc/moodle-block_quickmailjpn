@@ -49,7 +49,11 @@ class page_manage_users extends page {
 		$statusstr = qm::get_status_options();
 		$editicon = new \pix_icon('t/edit', 'edit');
 
-		$users = get_enrolled_users($this->context, '', 0, 'u.*', 'lastname, firstname');
+		$groupid = 0;
+		if (groups_get_course_groupmode($this->course)) {
+			$groupid = groups_get_course_group($this->course, true);
+		}
+		$users = get_enrolled_users($this->context, '', $groupid, 'u.*', 'lastname, firstname');
 		foreach ($users as $user) {
 			$userid = $user->id;
 
