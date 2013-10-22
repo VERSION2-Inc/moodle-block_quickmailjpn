@@ -29,6 +29,8 @@ class page_manage_users extends page {
 		echo $this->output->header();
 		echo $this->output->heading(qm::str('manageemailaddresses'));
 
+		echo groups_print_course_menu($this->course, $this->url);
+
 		$columns = ['name', 'mobileemail', 'mobileemailstatus', 'operations'];
 		$headers = [
 			qm::str('name'),

@@ -61,7 +61,12 @@ if (!$haspermission) {
 	print_error('errornopermission', 'block_quickmailjpn');
 }
 
-if (!$courseusers = get_users_by_capability($context, 'moodle/grade:view', 'u.*', 'u.lastname, u.firstname', '', '', '', '', false)) {
+$groups = '';
+if (groups_get_course_groupmode($course)) {
+	$groups = groups_get_course_group($course, true);
+}
+if (!$courseusers = get_users_by_capability($context, 'moodle/grade:view', 'u.*',
+		'u.lastname, u.firstname', '', '', $groups, '', false)) {
 	print_error('errornocourseusers', 'block_quickmailjpn');
 }
 
@@ -301,6 +306,11 @@ if (isset($form->error)) {
 
 $currenttab = 'compose';
 include($CFG->dirroot.'/blocks/quickmailjpn/tabs.php');
+
+echo groups_print_course_menu($course, new \moodle_url($PAGE->url, [
+        'id' => $id,
+		'instanceid' => $instanceid
+]));
 
 echo $OUTPUT->box_start('center');
 require($CFG->dirroot.'/blocks/quickmailjpn/email.html');
