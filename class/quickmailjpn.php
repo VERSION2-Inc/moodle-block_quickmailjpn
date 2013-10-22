@@ -53,6 +53,10 @@ class quickmailjpn {
 			throw new \coding_exception('useridを指定してください。');
 		}
 
+		if ($user->mobileemail === '') {
+			$user->mobileemailstatus = quickmailjpn::STATUS_NOT_SET;
+		}
+
 		if ($olduser = $DB->get_record(self::TABLE_USERS, array('userid' => $user->userid))) {
 			$user->id = $olduser->id;
 			$DB->update_record(self::TABLE_USERS, $user);
@@ -69,8 +73,8 @@ class quickmailjpn {
 			$DB->update_record(self::TABLE_USERS, $user);
 		} else {
 			$user = (object)array(
-			'userid' => $userid,
-			$field => $value
+					'userid' => $userid,
+					$field => $value
 			);
 			$DB->insert_record(self::TABLE_USERS, $user);
 		}
@@ -90,8 +94,8 @@ class quickmailjpn {
 			$DB->set_field(self::TABLE_USERS, 'mobileemail', $email, array('userid' => $userid));
 		} else {
 			$user = (object)array(
-			'userid' => $userid,
-			'mobileemail' => $email
+					'userid' => $userid,
+					'mobileemail' => $email
 			);
 			$DB->insert_record(self::TABLE_USERS, $user);
 		}

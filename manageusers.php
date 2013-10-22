@@ -64,12 +64,14 @@ class page_manage_users extends page {
 				$mobileemail = $qmuser->mobileemail;
 				$mobileemailstatus = $qmuser->mobileemailstatus;
 			}
+			$statuscell = \html_writer::tag('span', $statusstr[$mobileemailstatus],
+					array('class' => 'status-'.$mobileemailstatus));
 			$buttons = $this->output->action_icon(
 					new \moodle_url($this->url, array('mode' => 'edit', 'userid' => $userid)), $editicon);
 			$table->add_data(array(
 					fullname($user),
 					$mobileemail,
-					$statusstr[$mobileemailstatus],
+					$statuscell,
 					$buttons
 			));
 		}
@@ -122,7 +124,7 @@ class form_edit_user extends \moodleform {
 		$f->addElement('static', 'name', qm::str('name'), fullname($this->_customdata->user));
 
 		$f->addElement('text', 'mobileemail', qm::str('mobilephone'));
-		$f->setType('mobileemail', PARAM_EMAIL);
+		$f->setType('mobileemail', PARAM_TEXT);
 
 		$f->addElement('select', 'mobileemailstatus', qm::str('status'), qm::get_status_options());
 		$f->setDefault('mobileemailstatus', qm::STATUS_NOT_SET);
@@ -138,9 +140,6 @@ class form_edit_user extends \moodleform {
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        if (empty($data['mobileemail'])) {
-            $errors['mobileemail'] = qm::str('invalidaddress');
-        }
         return $errors;
     }
 }

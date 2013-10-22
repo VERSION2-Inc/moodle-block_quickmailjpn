@@ -8,9 +8,15 @@
 
 .block_quickmailjpn .nowrap { white-space: nowrap }
 
-.block_quickmailjpn .status-notset { color: #0000FF }
-.block_quickmailjpn .status-checking { color: #FF0000 }
-.block_quickmailjpn .status-confirmed { color: #008000 }
+.block_quickmailjpn .status-notset,
+.path-blocks-quickmailjpn .status-notyet
+{ color: #0000FF }
+.block_quickmailjpn .status-checking,
+.path-blocks-quickmailjpn .status-checking
+{ color: #FF0000 }
+.block_quickmailjpn .status-confirmed,
+ .path-blocks-quickmailjpn .status-confirmed
+{ color: #008000 }
 
 .block_quickmailjpn .explanation {
     border: 1px solid gray;
