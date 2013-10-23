@@ -11,7 +11,6 @@
 require_once '../../config.php';
 require_once $CFG->libdir . '/blocklib.php';
 require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
-require_once $CFG->dirroot . '/blocks/quickmailjpn/constants.php';
 
 use ver2\quickmailjpn\quickmailjpn as qm;
 

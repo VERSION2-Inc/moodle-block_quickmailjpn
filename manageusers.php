@@ -96,13 +96,13 @@ class page_manage_users extends page {
 		} else if ($form->is_submitted() && $form->is_validated()) {
 			$data = $form->get_data();
 			if (empty($data->mobileemail)) {
-				$data->mobileemailstatus = quickmailjpn::STATUS_NOT_SET;
+				$data->mobileemailstatus = qm::STATUS_NOT_SET;
 			}
 			qm::set_user($data);
 			redirect($this->url);
 		}
 
-		$qmuser = quickmailjpn::get_user($userid);
+		$qmuser = qm::get_user($userid);
 		$form->set_data($qmuser);
 
 		$this->set_title(qm::str('manageemailaddresses'));
@@ -118,16 +118,18 @@ class form_edit_user extends \moodleform {
 	protected function definition() {
 		$f = $this->_form;
 
+		$user = $this->_customdata->user;
+
 		$f->addElement('hidden', 'mode', 'edit');
 		$f->setType('mode', PARAM_ALPHA);
 		$f->addElement('hidden', 'course', $this->_customdata->course);
 		$f->setType('course', PARAM_INT);
-		$f->addElement('hidden', 'userid', $this->_customdata->user->id);
+		$f->addElement('hidden', 'userid', $user->id);
 		$f->setType('userid', PARAM_INT);
 
 		$f->addElement('header', 'emailhdr', qm::str('mobilephone'));
 
-		$f->addElement('static', 'name', qm::str('name'), fullname($this->_customdata->user));
+		$f->addElement('static', 'name', qm::str('name'), fullname($user));
 
 		$f->addElement('text', 'mobileemail', qm::str('mobilephone'), array('size' => 40));
 		$f->setType('mobileemail', PARAM_TEXT);

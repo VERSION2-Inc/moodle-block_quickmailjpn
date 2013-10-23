@@ -11,7 +11,6 @@
  * @package quickmail
  **/
 
-require_once dirname(__FILE__).'/constants.php';
 require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
 
 use ver2\quickmailjpn\quickmailjpn as qm;
