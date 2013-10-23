@@ -13,6 +13,7 @@ require_once $CFG->libdir . '/blocklib.php';
 require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
 
 use ver2\quickmailjpn\quickmailjpn as qm;
+use ver2\quickmailjpn\util;
 
 $id         = required_param('id', PARAM_INT);  // course ID
 $instanceid = optional_param('instanceid', 0, PARAM_INT);
@@ -209,15 +210,7 @@ case 'fullname':
 default:
     $order = 'fullname';
 }
-$prev_encoding = mb_internal_encoding();
-{
-    mb_internal_encoding('utf-8'); // ソート順のエンコーディングを指定
-
-    uasort($courseusers, function ($lhs, $rhs) use ($order) {
-        return strnatcasecmp($lhs->{$order}, $rhs->{$order});
-    });
-}
-mb_internal_encoding($prev_encoding);
+collatorlib::asort_objects_by_property($courseusers, $order, collatorlib::SORT_NATURAL);
 
 $i = 0;
 foreach ($courseusers as $user) {
