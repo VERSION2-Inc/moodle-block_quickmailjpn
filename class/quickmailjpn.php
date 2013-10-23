@@ -6,8 +6,8 @@ class quickmailjpn {
 
 	const TABLE_USERS = 'block_quickmailjpn_users';
 
-	const STATUS_NOT_SET   = 'notyet';
-	const STATUS_CHECKING  = 'checking';
+	const STATUS_NOT_SET = 'notyet';
+	const STATUS_CHECKING = 'checking';
 	const STATUS_CONFIRMED = 'confirmed';
 
 	/**

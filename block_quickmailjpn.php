@@ -122,13 +122,16 @@ class block_quickmailjpn extends block_list {
 				$str_email_address = '';
 			}
 
-			$this->content->items[] = '<div class="mymobilephone">'.
-                                      get_string('mymobilephone', 'block_quickmailjpn').'<br />'.
-			                          $str_email_address.
-			                          '<a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/'.
-                                      'checkemail.php?id='.$this->course->id.'&amp;instanceid='.
-                                      $this->instance->id.'">'.$str_email_status.'</a>'.
-                                      '</div>';
+			$o = '';
+			$o .= $OUTPUT->container_start('mymobilephone');
+			$o .= qm::str('mymobilephone').\html_writer::empty_tag('br');
+			$o .= $str_email_address;
+			$o .= $OUTPUT->action_link(new moodle_url('/blocks/quickmailjpn/checkemail.php', array(
+					'id' => $this->course->id,
+					'instanceid' => $this->instance->id
+			)), $str_email_status);
+			$o .= $OUTPUT->container_end();
+			$this->content->items[] = $o;
 			$this->content->icons[] = null;
 		}
 
