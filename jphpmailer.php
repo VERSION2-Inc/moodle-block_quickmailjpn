@@ -11,8 +11,10 @@
 #
 ####################################################################
 
+defined('MOODLE_INTERNAL') || die();
+
 //PHPMailerを読み込む
-require('../../lib/phpmailer/class.phpmailer.php');
+require_once $CFG->libdir . '/phpmailer/class.phpmailer.php';
 
 /**
  * JPHPMailer - PHPMailer Japanese Edition

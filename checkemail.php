@@ -7,12 +7,10 @@
  * @package quickmailjpn
  **/
 
-require_once('../../config.php');
-require_once($CFG->libdir.'/blocklib.php');
-require_once("./jphpmailer.php");
-require_once("./lib.php");
-require_once './constants.php';
+require_once '../../config.php';
+require_once $CFG->libdir . '/blocklib.php';
 require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
+require_once $CFG->dirroot . '/blocks/quickmailjpn/constants.php';
 
 use ver2\quickmailjpn\quickmailjpn as qm;
 
@@ -67,7 +65,7 @@ if ($form = data_submitted()) do {
 
             //prepare e-mail data
 
-            $key = makePassword(7);
+            $key = qm::make_password(7);
             $encKey = md5($key);
 
             $confirmurl = new moodle_url('/blocks/quickmailjpn/confirm.php', array('id' => $userid, 'key' => $encKey));

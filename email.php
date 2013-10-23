@@ -8,12 +8,11 @@
  * @package quickmail
  **/
 
-require_once('../../config.php');
-require_once($CFG->libdir.'/blocklib.php');
-require_once('./lib.php');
-require_once './constants.php';
-
+require_once '../../config.php';
+require_once $CFG->libdir . '/blocklib.php';
 require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
+require_once $CFG->dirroot . '/blocks/quickmailjpn/constants.php';
+
 use ver2\quickmailjpn\quickmailjpn as qm;
 
 $id         = required_param('id', PARAM_INT);  // course ID

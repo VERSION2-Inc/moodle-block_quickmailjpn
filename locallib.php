@@ -1,7 +1,7 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
-
+require_once $CFG->dirroot . '/blocks/quickmailjpn/jphpmailer.php';
 
 function block_quickmailjpn_autoload($classname) {
 	global $CFG;

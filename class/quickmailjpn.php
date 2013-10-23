@@ -108,4 +108,23 @@ class quickmailjpn {
 				self::STATUS_NOT_SET => self::str('notyet')
 		);
 	}
+
+	/**
+	 *
+	 * @param int $len
+	 * @return string
+	 */
+	public static function make_password($len) {
+		srand((float)microtime() * 54234853);
+
+		$pstr = 'abcdefghkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ2345679';
+		$pary = preg_split('//', $pstr, 0, PREG_SPLIT_NO_EMPTY);
+
+		$pw = '';
+		for ($i = 0; $i < $len; $i++) {
+			// パスワード文字列を生成
+			$pw .= $pary[array_rand($pary, 1)];
+		}
+		return $pw;
+	}
 }
