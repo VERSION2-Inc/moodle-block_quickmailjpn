@@ -125,11 +125,9 @@ class block_quickmailjpn extends block_list {
 			$this->content->items[] = '<div class="mymobilephone">'.
                                       get_string('mymobilephone', 'block_quickmailjpn').'<br />'.
 			                          $str_email_address.
-			                          '<span class="nowrap">'.
 			                          '<a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/'.
                                       'checkemail.php?id='.$this->course->id.'&amp;instanceid='.
                                       $this->instance->id.'">'.$str_email_status.'</a>'.
-                                      '</span>'.
                                       '</div>';
 			$this->content->icons[] = null;
 		}

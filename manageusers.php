@@ -108,6 +108,7 @@ class page_manage_users extends page {
 		$this->set_title(qm::str('manageemailaddresses'));
 
 		echo $this->output->header();
+		echo $this->output->heading(qm::str('manageemailaddresses'));
 		$form->display();
 		echo $this->output->footer();
 	}
@@ -124,9 +125,11 @@ class form_edit_user extends \moodleform {
 		$f->addElement('hidden', 'userid', $this->_customdata->user->id);
 		$f->setType('userid', PARAM_INT);
 
+		$f->addElement('header', 'emailhdr', qm::str('mobilephone'));
+
 		$f->addElement('static', 'name', qm::str('name'), fullname($this->_customdata->user));
 
-		$f->addElement('text', 'mobileemail', qm::str('mobilephone'));
+		$f->addElement('text', 'mobileemail', qm::str('mobilephone'), array('size' => 40));
 		$f->setType('mobileemail', PARAM_TEXT);
 
 		$f->addElement('select', 'mobileemailstatus', qm::str('status'), qm::get_status_options());
@@ -143,7 +146,7 @@ class form_edit_user extends \moodleform {
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        if (!empty($data['mobileemail']) && !\validate_email($data['mobileemail'])) {
+        if (!empty($data['mobileemail']) && !validate_email($data['mobileemail'])) {
             $errors['mobileemail'] = qm::str('invalidaddress');
         }
         return $errors;
