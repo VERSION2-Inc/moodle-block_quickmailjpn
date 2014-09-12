@@ -20,6 +20,18 @@ function block_quickmailjpn_autoload($classname) {
 
 spl_autoload_register('block_quickmailjpn_autoload');
 
+if (!in_array('PHPMailerAutoload', spl_autoload_functions())) {
+    if (!function_exists('PHPMailerAutoload')) {
+        function PHPMailerAutoload($classname) {
+            global $CFG;
+            $path = $CFG->libdir.'/phpmailer/class.'.strtolower($classname).'.php';
+            if (is_readable($path)) {
+                require_once $path;
+            }
+        }
+    }
+    spl_autoload_register('PHPMailerAutoload');
+}
 
 function get_jmailer() {
     global $CFG;
