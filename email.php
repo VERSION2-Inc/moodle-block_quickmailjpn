@@ -103,7 +103,7 @@ if ($action == 'view') {
         $form->plaintxt = format_text_email($form->message, $form->format); // plain text
         $form->html = format_text($form->message, $form->format);        // html
 
-        //$mail = new JPHPMailer();
+        //$mail = get_jmailer();
 
         // run through each user id and send a copy of the email to him/her
         // not sending 1 email with CC to all user ids because emails were required to be kept private
@@ -126,7 +126,7 @@ if ($action == 'view') {
             }
 
             //send e-mail by JPHPMailer via PHPMailer
-            $mail = new JPHPMailer();
+            $mail = get_jmailer();
             $mail->addTo($email);
             $mail->setFrom($form->mailfrom, fullname($USER));
             $mail->setSubject($form->subject);
@@ -147,7 +147,7 @@ if ($action == 'view') {
         }
 
         if (!empty($form->sendmecopy)) {
-        	$mail = new JPHPMailer();
+        	$mail = get_jmailer();
         	$mail->addTo($form->mailfrom);
         	$mail->setFrom($form->mailfrom, fullname($USER));
         	$mail->setSubject($form->subject);

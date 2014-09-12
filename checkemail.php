@@ -77,7 +77,7 @@ if ($form = data_submitted()) do {
             }
 
             //send e-mail by JPHPMailer via PHPMailer
-            $mail = new JPHPMailer();
+            $mail = get_jmailer();
 
             $mail->addTo($mobileemail);
             $mail->setFrom($from, $from);
