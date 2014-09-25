@@ -15,6 +15,12 @@ require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
 use ver2\quickmailjpn\quickmailjpn as qm;
 use ver2\quickmailjpn\util;
 
+/* @var $DB moodle_database */
+/* @var $CFG object */
+/* @var $USER object */
+/* @var $PAGE moodle_page */
+/* @var $OUTPUT core_renderer */
+
 $id         = required_param('id', PARAM_INT);  // course ID
 $instanceid = optional_param('instanceid', 0, PARAM_INT);
 $action     = optional_param('action', '', PARAM_ALPHA);
@@ -99,9 +105,37 @@ if ($action == 'view') {
     if(!isset($form->error)) {
         $mailedto = array(); // holds all the userid of successful emails
 
-        // get the correct formating for the emails
-        $form->plaintxt = format_text_email($form->message, $form->format); // plain text
-        $form->html = format_text($form->message, $form->format);        // html
+        // 携帯メールフィルタで拒否されるのを防止するため、
+        // ヘッダの From: には常に noreply を使用し、
+        // 差出人は Reply-To: に指定する
+
+        // From:
+        if (!empty($CFG->block_quickmailjpn_email)) {
+            $mailfrom = $CFG->block_quickmailjpn_email;
+        } elseif (!empty($CFG->noreplyaddress)) {
+            $mailfrom = $CFG->noreplyaddress;
+        } else {
+            $hostname = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']);
+            $mailfrom = 'noreply@' . $hostname;
+        }
+
+        // Reply-To:
+        if (validate_email($form->mailfrom)) {
+            $mailreplyto = $form->mailfrom;
+        } elseif ($mobileemail = $DB->get_field(qm::TABLE_USERS, 'mobileemail',
+                  array('userid' => $USER->id, 'mobileemailstatus' => QuickMailJPN_State::CONFIRMED))) {
+            $mailreplyto = $mobileemail;
+        } elseif (!$USER->emailstop) {
+            $mailreplyto = $USER->email;
+        } else {
+            $mailreplyto = null;
+        }
+
+        if (!validate_email($form->mailfrom)) {
+            $mailfromname = $form->mailfrom;
+        }  else {
+            $mailfromname = fullname($USER);
+        }
 
         //$mail = get_jmailer();
 
@@ -127,11 +161,14 @@ if ($action == 'view') {
 
             //send e-mail by JPHPMailer via PHPMailer
             $mail = get_jmailer();
-            $mail->addTo($email);
-            $mail->setFrom($form->mailfrom, fullname($USER));
+            $mail->addTo($email, fullname($courseusers[$userid]));
+            $mail->setFrom($mailfrom, $mailfromname);
+            if ($mailreplyto) {
+                $mail->addReplyTo($mailreplyto, $mailfromname);
+            }
             $mail->setSubject($form->subject);
             $bodyText  = $courseusers[$userid]->username.' '.fullname($courseusers[$userid]).get_string('san', 'block_quickmailjpn')."\n\n";
-            $bodyText .= $form->plaintxt;
+            $bodyText .= $form->message;
 
             $mail->setBody($bodyText);
             $mailresult = $mail->send();
@@ -148,11 +185,11 @@ if ($action == 'view') {
 
         if (!empty($form->sendmecopy)) {
         	$mail = get_jmailer();
-        	$mail->addTo($form->mailfrom);
-        	$mail->setFrom($form->mailfrom, fullname($USER));
+        	$mail->addTo($mailreplyto, $mailfromname);
+        	$mail->setFrom($mailfrom, $mailfromname);
         	$mail->setSubject($form->subject);
         	$bodyText  = $courseusers[$userid]->username.' '.fullname($courseusers[$userid]).get_string('san', 'block_quickmailjpn')."\n\n";
-        	$bodyText .= $form->plaintxt;
+        	$bodyText .= $form->message;
 
             $mail->setBody($bodyText);
             $mailresult = $mail->send();
@@ -304,9 +341,5 @@ echo groups_print_course_menu($course, new \moodle_url($PAGE->url, array(
 echo $OUTPUT->box_start('center');
 require($CFG->dirroot.'/blocks/quickmailjpn/email.html');
 echo $OUTPUT->box_end();
-
-if ($usehtmleditor) {
-    use_html_editor('message');
-}
 
 echo $OUTPUT->footer($course);

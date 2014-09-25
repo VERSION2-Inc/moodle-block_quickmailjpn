@@ -52,21 +52,10 @@ function test(a) {
   <tr valign="top">
     <td align="right"><b><?php print_string('message', 'forum'); ?>:</b></td>
     <td align="left">
-    <?php
-    	$usehtmleditor='';
-    	print_textarea($usehtmleditor, 10, 65, 630, 200, 'message', $form->message);
-    ?>
+      <textarea class="form-textarea" id="edit-message" name="message" rows="10" cols="65"><?php s($form->message); ?></textarea>
     </td>
   </tr>
 
-  <tr valign="top">
-    <td align="right"><b><?php print_string('formattexttype'); ?>:</b></td>
-        <td align="left">Plain Text
-          <?php
-        echo '<input type="hidden" name="format" value="'.FORMAT_PLAIN.'" />';
-     ?>
-        </td>
-  </tr>
   <tr valign="top">
     <td align="right"></td>
         <td align="left">
