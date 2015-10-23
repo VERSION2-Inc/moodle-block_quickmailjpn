@@ -52,7 +52,7 @@ function test(a) {
   <tr valign="top">
     <td align="right"><b><?php print_string('message', 'forum'); ?>:</b></td>
     <td align="left">
-      <textarea class="form-textarea" id="edit-message" name="message" rows="10" cols="65"><?php s($form->message); ?></textarea>
+      <textarea class="form-textarea" id="edit-message" name="message" rows="10" cols="65"><?php echo $message ?></textarea>
     </td>
   </tr>
 

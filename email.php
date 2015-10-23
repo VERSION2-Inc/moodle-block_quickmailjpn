@@ -247,7 +247,7 @@ case 'fullname':
 default:
     $order = 'fullname';
 }
-collatorlib::asort_objects_by_property($courseusers, $order, collatorlib::SORT_NATURAL);
+core_collator::asort_objects_by_property($courseusers, $order, core_collator::SORT_NATURAL);
 
 $i = 0;
 foreach ($courseusers as $user) {
@@ -337,7 +337,7 @@ echo groups_print_course_menu($course, new \moodle_url($PAGE->url, array(
         'id' => $id,
 		'instanceid' => $instanceid
 )));
-
+$message = s($form->message);
 echo $OUTPUT->box_start('center');
 require($CFG->dirroot.'/blocks/quickmailjpn/email.html');
 echo $OUTPUT->box_end();
