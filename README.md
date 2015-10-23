@@ -1,7 +1,7 @@
 Mobile Quickmail JPN
 ====================
 
-version 2014.09.12
+version 2.9.2, release 1 - 2015.10.22
 
 
 Features
@@ -21,7 +21,7 @@ The features include:
 Requirements
 ------------
 
-Moodle 2.0 to 2.7
+Moodle 2.0 to 2.9
 
 
 License
