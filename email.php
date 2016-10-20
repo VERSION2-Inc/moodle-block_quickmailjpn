@@ -167,7 +167,8 @@ if ($action == 'view') {
                 $mail->addReplyTo($mailreplyto, $mailfromname);
             }
             $mail->setSubject($form->subject);
-            $bodyText  = $courseusers[$userid]->username.' '.fullname($courseusers[$userid]).get_string('san', 'block_quickmailjpn')."\n\n";
+            $bodyText  = 'Date: ' . date('Y/m/d') . "\n\n";
+            $bodyText .= 'From: ' . fullname($USER) . "\n\n";
             $bodyText .= $form->message;
 
             $mail->setBody($bodyText);
@@ -188,7 +189,8 @@ if ($action == 'view') {
         	$mail->addTo($mailreplyto, $mailfromname);
         	$mail->setFrom($mailfrom, $mailfromname);
         	$mail->setSubject($form->subject);
-        	$bodyText  = $courseusers[$userid]->username.' '.fullname($courseusers[$userid]).get_string('san', 'block_quickmailjpn')."\n\n";
+            $bodyText  = 'Date: ' . date('Y/m/d') . "\n\n";
+            $bodyText .= 'From: ' . fullname($USER) . "\n\n";
         	$bodyText .= $form->message;
 
             $mail->setBody($bodyText);

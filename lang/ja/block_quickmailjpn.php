@@ -88,3 +88,4 @@ $string['explanation'] = '<div class="explanation">
 <strong>※メールアドレスを変更した場合は忘れずに更新してください。</strong><br />
 教員は講義に関する重要なメールやお知らせをこのアドレス宛に送ります。
 </div>';
+
