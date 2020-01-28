@@ -57,32 +57,27 @@ class block_quickmailjpn extends block_list {
             return $this->content;
         }
 
-		$block_context = context_block::instance($this->instance->id);
+        $block_context = context_block::instance($this->instance->id);
 
-		if (has_capability('block/quickmailjpn:cansend', $block_context)) {
-			// 「作成」
-			$this->content->items[] = ' <a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/email.php'.
-			                          '?id='.$this->course->id.'&amp;instanceid='.$this->instance->id.'">'.
-			                          get_string('compose', 'block_quickmailjpn').'</a>';
-			$this->content->icons[]
-                = $OUTPUT->pix_icon('i/email', get_string('email'), 'moodle',
-                                    array('width' => 16, 'height' => 16));
+        if (has_capability('block/quickmailjpn:cansend', $block_context)) {
+            // 「作成」
+            $this->content->items[] = sprintf('%s <a href="%s/blocks/quickmailjpn/email.php?id=%s&amp;instanceid=%s">%s</a>',
+                                              $OUTPUT->pix_icon('i/email', get_string('email'), 'moodle', array('width' => 16, 'height' => 16)), $CFG->wwwroot, $this->course->id,
+                                              $this->instance->id, get_string('compose', 'block_quickmailjpn'));
+            $this->content->icons[] = null;
 
-			// 「履歴」
-			$this->content->items[] = ' <a href="'.$CFG->wwwroot.'/blocks/quickmailjpn/emaillog.php'.
-			                          '?id='.$this->course->id.'&amp;instanceid='.$this->instance->id.'">'.
-			                          get_string('history', 'block_quickmailjpn').'</a>';
-			$this->content->icons[]
-                = $OUTPUT->pix_icon('t/log', get_string('log', 'block_quickmailjpn'), 'moodle',
-                                    array('width' => 16, 'height' => 16));
+            // 「履歴」
+            $this->content->items[] = sprintf('%s <a href="%s/blocks/quickmailjpn/emaillog.php?id=%s&amp;instanceid=%s">%s</a>',
+                                              $OUTPUT->pix_icon('t/log', get_string('log', 'block_quickmailjpn'), 'moodle', array('width' => 16, 'height' => 16)), $CFG->wwwroot,
+                                              $this->course->id, $this->instance->id, get_string('history', 'block_quickmailjpn'));
+            $this->content->icons[] = null;
 
-			$this->content->items[] = $OUTPUT->action_link(
-					new moodle_url('/blocks/quickmailjpn/manageusers.php', array('course' => $COURSE->id)),
-					qm::str('manageemailaddresses'));
-			$this->content->icons[] = $OUTPUT->pix_icon('i/users', '');
+            $this->content->items[] = sprintf('%s %s', $OUTPUT->pix_icon('i/users', ''),
+                                              $OUTPUT->action_link(new moodle_url('/blocks/quickmailjpn/manageusers.php', array('course' => $COURSE->id)), qm::str('manageemailaddresses')));
+            $this->content->icons[] = null;
 
-			$this->content->items[] = \html_writer::empty_tag('hr');
-			$this->content->icons[] = '';
+            $this->content->items[] = \html_writer::empty_tag('hr');
+            $this->content->icons[] = '';
 		}
 		if (has_capability('block/quickmailjpn:view', $block_context)) {
 			if (!empty($this->instance->pinned) || $this->instance->pagetypepattern == 'course-view-*') {
@@ -106,13 +101,13 @@ class block_quickmailjpn extends block_list {
 				$email_status = $qmuser->mobileemailstatus;
 			}
 
-            $classes = array(
-                QuickMailJPN_State::NOT_SET => 'status-notset',
-                QuickMailJPN_State::CHECKING => 'status-checking',
-                QuickMailJPN_State::CONFIRMED => 'status-confirmed');
-            $str_email_status = html_writer::tag(
-                'span', get_string("user-$email_status", 'block_quickmailjpn'),
-                array('class' => $classes[$email_status]));
+			$classes = array(
+				QuickMailJPN_State::NOT_SET   => 'status-notset',
+				QuickMailJPN_State::CHECKING  => 'status-checking',
+				QuickMailJPN_State::CONFIRMED => 'status-confirmed');
+			$str_email_status = html_writer::tag(
+				'span', get_string("user-$email_status", 'block_quickmailjpn'),
+				array('class' => $classes[$email_status]));
 			$str_email_status = get_string("block-$email_status", 'block_quickmailjpn', $str_email_status);
 
 			if ($email_address) {
@@ -197,10 +192,10 @@ class block_quickmailjpn extends block_list {
     /**
      * Get the groupmode of Quickmail.  This function pays
      * attention to the course group mode force.
-     *
      * @return int The group mode of the block
      **/
     function groupmode() {
-        return groupmode($this->course, $this->config);
+        $this->config->course = $this->course->id;
+        return groups_get_activity_groupmode($this->config, $this->course);
     }
 }

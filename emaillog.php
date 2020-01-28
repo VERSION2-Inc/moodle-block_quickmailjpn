@@ -20,7 +20,7 @@ $id = required_param('id', PARAM_INT);    // course id
 $action = optional_param('action', '', PARAM_ALPHA);
 $instanceid = optional_param('instanceid', 0, PARAM_INT);
 
-$PAGE->set_url('/blocks/quickmailjpn/emaillog.php');
+$PAGE->set_url('/blocks/quickmailjpn/emaillog.php',array('id' => $id,'instanceid'=>$instanceid));
 
 $instance = new stdClass();
 
@@ -98,7 +98,7 @@ if ($action == 'dump') {
 }
 
 /// set table columns and headers
-$tablecolumns = array('timesent', 'subject', 'action');
+$tablecolumns = array('timesent', 'subject', 'attachment', 'action');
 $tableheaders = array(get_string('date', 'block_quickmailjpn'), get_string('subject', 'forum'),
                       get_string('action', 'block_quickmailjpn'));
 

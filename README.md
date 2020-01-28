@@ -1,7 +1,7 @@
 Mobile Quickmail JPN
 ====================
 
-version 3.1, release 1 - 2016.9.12
+version 2.9.2, release 1 - 2015.10.22
 
 
 Features

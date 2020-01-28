@@ -76,6 +76,29 @@ function xmldb_block_quickmailjpn_upgrade($oldversion = 0) {
         // Quickmailjpn savepoint reached.
         upgrade_block_savepoint(true, 2013092700, 'quickmailjpn');
     }
+    if ($oldversion < 2019092706) {
+        // Define table block_quickmailjpn_log to be created.
+        $table = new xmldb_table('block_quickmailjpn_log');
+        $field = new xmldb_field('attachment');
+        $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, null);
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table,$field);
+        }
+
+        $field = new xmldb_field('format');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '3', null, null, null, null);
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table,$field);
+        }
+
+        $field = new xmldb_field('failuserids');
+        $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, null);
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table,$field);
+        }
+        // Quickmailjpn savepoint reached.
+        upgrade_block_savepoint(true, 2019092706, 'quickmailjpn');
+    }
 
     return $result;
 }

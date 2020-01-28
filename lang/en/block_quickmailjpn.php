@@ -91,3 +91,4 @@ Enter or update your mobile phone address here.
 Your teacher will send you important reminders and announcements about this class.
 </div>';
 
+$string['attachments'] = 'Attachment(s)';
