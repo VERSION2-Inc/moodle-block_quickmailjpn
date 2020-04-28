@@ -28,5 +28,9 @@
 
 .block_quickmailjpn .mymobilephone {
     text-align: center;
-    margin: 0 auto 0 auto;
+    margin: 0 auto;
+}
+
+.block_quickmailjpn ul li div {
+    width: 100%;
 }

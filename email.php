@@ -11,7 +11,7 @@
 require_once '../../config.php';
 require_once $CFG->libdir . '/blocklib.php';
 require_once $CFG->dirroot . '/blocks/quickmailjpn/locallib.php';
-
+require_once('email_form.php');
 use ver2\quickmailjpn\quickmailjpn as qm;
 use ver2\quickmailjpn\util;
 
@@ -25,12 +25,12 @@ $id         = required_param('id', PARAM_INT);  // course ID
 $instanceid = optional_param('instanceid', 0, PARAM_INT);
 $action     = optional_param('action', '', PARAM_ALPHA);
 
-$PAGE->set_url('/blocks/quickmailjpn/email.php');
+$PAGE->set_url('/blocks/quickmailjpn/email.php',array('id' => $id,'instanceid'=>$instanceid));
 
 $instance = new stdClass();
 
 if (!$course = $DB->get_record('course', array('id' => $id))) {
-    error('Course ID was incorrect');
+    print_error('Course ID was incorrect');
 }
 
 require_login($course->id);
@@ -74,14 +74,24 @@ if (!$courseusers = get_users_by_capability($context, 'moodle/grade:view', 'u.*'
 		'u.lastname, u.firstname', '', '', $groups, '', false)) {
 	print_error('errornocourseusers', 'block_quickmailjpn');
 }
-
+$editor_options = array(
+    'trusttext' => false,
+    'subdirs' => 1,
+    'maxfiles' => EDITOR_UNLIMITED_FILES,
+    'accepted_types' => '*',
+    'context' => $context
+);
 
 if ($action == 'view') {
     // viewing an old email.  Hitting the db and puting it into the object $form
     $emailid = required_param('emailid', PARAM_INT);
     $form = $DB->get_record('block_quickmailjpn_log', array('id' => $emailid), '*', MUST_EXIST);
     $form->mailto = explode(',', $form->mailto); // convert mailto back to an array
-
+    $form->id = $id;
+    $form->messageformat =  editors_get_preferred_format();
+    $form = file_prepare_standard_editor(
+        $form, 'message', $editor_options, $context, 'block_quickmailjpn', $type, $form->id
+    );
 } else if ($form = data_submitted()) {   // data was submitted to be mailed
     confirm_sesskey();
 
@@ -97,7 +107,7 @@ if ($action == 'view') {
         $form->error = get_string('fromerror', 'block_quickmailjpn');
     } else if (!$form->subject) {
         $form->error = get_string('subjecterror', 'block_quickmailjpn');
-    } else if (!$form->message) {
+    } else if (!$form->message_editor) {
         $form->error = get_string('messageerror', 'block_quickmailjpn');
     }
 
@@ -110,15 +120,15 @@ if ($action == 'view') {
         // 差出人は Reply-To: に指定する
 
         // From:
-        if (!empty($CFG->block_quickmailjpn_email)) {
+        /*  if (!empty($CFG->block_quickmailjpn_email)) {
             $mailfrom = $CFG->block_quickmailjpn_email;
         } elseif (!empty($CFG->noreplyaddress)) {
             $mailfrom = $CFG->noreplyaddress;
         } else {
             $hostname = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']);
             $mailfrom = 'noreply@' . $hostname;
-        }
-
+        }*/
+        $mailfrom = $form->mailfrom;
         // Reply-To:
         if (validate_email($form->mailfrom)) {
             $mailreplyto = $form->mailfrom;
@@ -136,6 +146,60 @@ if ($action == 'view') {
         }  else {
             $mailfromname = fullname($USER);
         }
+
+        $form->format = $form->message_editor['format'];
+        $form->message = $form->message_editor['text'];
+        $form->attachment = attachment_names($form->attachments);
+        $form->messageWithSigAndAttach = "";
+        $table = 'log';
+
+
+        foreach ($form->mailto as $userid) {
+            $mailedto[] = $userid;
+        }
+        // prepare an object for the insert_record function
+        $log = new stdClass;
+        $log->courseid   = $course->id;
+        $log->userid     = $USER->id;
+        $log->mailto     = implode(',', $mailedto);
+        $log->subject    = $form->subject;
+        $log->message    = $form->message;
+        $log->mailfrom   = $form->mailfrom;
+        $log->attachment   = $form->attachment;
+        $log->format   = $form->format;
+        $log->timesent   = time();
+
+        $form->id = $DB->insert_record('block_quickmailjpn_log', $log);
+        if (!$form->id) {
+            print_error('Email not logged.');
+        }
+
+        $form = file_postupdate_standard_editor(
+            $form, 'message', $editor_options, $context, 'block_quickmailjpn', $table, $form->id
+        );
+        $log->message  = $form->message;
+        $log->format   = $form->format;
+        $log->id = $form->id;
+        $DB->update_record('block_quickmailjpn_' . $table, $log);
+
+        // An instance id is needed before storing the file repository /////////
+        file_save_draft_area_files(
+            $form->attachments, $context->id, 'block_quickmailjpn', 'attachment_' . $table, $form->id, $editor_options
+        );
+        // Prepare html content of message /////////////////////////////////
+        $form->message = file_rewrite_pluginfile_urls($form->message, 'pluginfile.php', $context->id, 'block_quickmailjpn', $table, $form->id, $editor_options);
+
+        $form->messageWithSigAndAttach = $form->message;
+        // Append links to attachments, if any /////////////////////////////
+        $form->messageWithSigAndAttach .= process_attachments(
+            $context, $log, $table, $form->id
+        );
+
+        $messagetext = format_text_email($form->messageWithSigAndAttach, $form->format);
+
+        // HTML
+        $options = array('filter' => false);
+        $messagehtml = format_text($form->messageWithSigAndAttach, $form->format, $options);
 
         //$mail = get_jmailer();
 
@@ -160,22 +224,27 @@ if ($action == 'view') {
             }
 
             //send e-mail by JPHPMailer via PHPMailer
+
+
             $mail = get_jmailer();
+            /*$mail->SMTPAutoTLS = false;*/
             $mail->addTo($email, fullname($courseusers[$userid]));
+            /*$mail->setFrom('jiafp.cs@adtis.com.cn', $mailfromname);*/
             $mail->setFrom($mailfrom, $mailfromname);
             if ($mailreplyto) {
                 $mail->addReplyTo($mailreplyto, $mailfromname);
             }
             $mail->setSubject($form->subject);
-            $bodyText  = 'Date: ' . date('Y/m/d') . "\n\n";
-            $bodyText .= 'From: ' . fullname($USER) . "\n\n";
-            $bodyText .= $form->message;
-
-            $mail->setBody($bodyText);
+            $bodyText  = 'Date: ' . date('Y/m/d') . "\n\n<br/>";
+            $bodyText .= 'From: ' . fullname($USER) . "\n\n<br/>";
+            $bodyText .= 'Subject: ' . $form->subject . "\n\n<br/>";
+            $bodyText .= 'Message: ' . $messagehtml . "\n\n<br/>";
+            $mail->setHtmlBody($bodyText);
             $mailresult = $mail->send();
 
             // checking for errors, if there is an error, store the name
             if (!$mailresult || (string) $mailresult == 'emailstop') {
+                $log->failuserids[] = $userid;
                 $form->error = get_string('emailfailerror', 'block_quickmailjpn');
                 $form->usersfail['emailfail'][] = $courseusers[$userid]->lastname.', '.$courseusers[$userid]->firstname;
             } else {
@@ -184,32 +253,25 @@ if ($action == 'view') {
             }
         }
 
+        $log->failuserids = implode(',', $log->failuserids);
+        $log->id = $form->id;
+        $DB->update_record('block_quickmailjpn_log', $log);
+
         if (!empty($form->sendmecopy)) {
         	$mail = get_jmailer();
         	$mail->addTo($mailreplyto, $mailfromname);
         	$mail->setFrom($mailfrom, $mailfromname);
         	$mail->setSubject($form->subject);
-            $bodyText  = 'Date: ' . date('Y/m/d') . "\n\n";
-            $bodyText .= 'From: ' . fullname($USER) . "\n\n";
-        	$bodyText .= $form->message;
+            $bodyText  = 'Date: ' . date('Y/m/d') . "\n\n<br/>";
+            $bodyText .= 'From: ' . fullname($USER) . "\n\n<br/>";
+            $bodyText .= 'Subject: ' . $form->subject . "\n\n<br/>";
+            $bodyText .= 'Message: ' . $messagehtml . "\n\n<br/>";
 
-            $mail->setBody($bodyText);
+
+            $mail->setHtmlBody($bodyText);
             $mailresult = $mail->send();
         }
 
-        // prepare an object for the insert_record function
-        $log = new stdClass;
-        $log->courseid   = $course->id;
-        $log->userid     = $USER->id;
-        $log->mailto     = implode(',', $mailedto);
-        $log->subject    = $form->subject;
-        $log->message    = $form->message;
-        $log->mailfrom   = $form->mailfrom;
-        $log->timesent   = time();
-
-        if (!$DB->insert_record('block_quickmailjpn_log', $log)) {
-            error('Email not logged.');
-        }
 
         if (!isset($form->error)) {  // if no emailing errors, we are done
             // inform of success and continue
@@ -340,8 +402,25 @@ echo groups_print_course_menu($course, new \moodle_url($PAGE->url, array(
 		'instanceid' => $instanceid
 )));
 $message = s($form->message);
+
+$mform = new email_form(null, array(
+    'editor_options' => $editor_options,
+    'id' => $id,
+    'instanceid' => $instanceid,
+    'tblStr'=>$tblStr,
+    'mailfrom'=>$form->mailfrom,
+));
+if ($action == 'view' && empty($form->attachments)) {
+    $attachid = file_get_submitted_draft_itemid('attachment');
+    file_prepare_draft_area(
+        $attachid, $context->id, 'block_quickmailjpn', 'attachment_' . 'log', $form->id
+    );
+    $form->attachments = $attachid;
+}
+$mform->set_data($form);
 echo $OUTPUT->box_start('center');
 require($CFG->dirroot.'/blocks/quickmailjpn/email.html');
+$mform->display();
 echo $OUTPUT->box_end();
 
 echo $OUTPUT->footer($course);

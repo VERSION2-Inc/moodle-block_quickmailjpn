@@ -13,9 +13,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-//PHPMailerを読み込む
-require_once $CFG->libdir . '/phpmailer/class.phpmailer.php';
-
 /**
  * JPHPMailer - PHPMailer Japanese Edition
  *
@@ -25,7 +22,7 @@ require_once $CFG->libdir . '/phpmailer/class.phpmailer.php';
  * @license   LGPL
  * @link http://techblog.ecstudio.jp/tech-tips/mail-japanese-advance.html
  */
-class JPHPMailer extends PHPMailer {
+class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	var $CharSet = "iso-2022-jp";
 	var $Encoding = "7bit";
 	var $in_enc = "UTF-8"; //内部エンコード
@@ -175,6 +172,15 @@ class JPHPMailer extends PHPMailer {
 		}
 		$this->addCustomHeader($key.":".$this->encodeMimeHeader(mb_convert_encoding($value,"JIS",$this->in_enc)));
 	}
+
+    /**
+     * Set the line break format string, e.g. "\r\n".
+     *
+     * @param string $le
+     */
+    public static function setLE($le) {
+        static::$LE = $le;
+    }
 
 	/**
 	 * エラーメッセージを取得する

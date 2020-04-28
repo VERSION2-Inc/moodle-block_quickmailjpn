@@ -89,3 +89,4 @@ $string['explanation'] = '<div class="explanation">
 教員は講義に関する重要なメールやお知らせをこのアドレス宛に送ります。
 </div>';
 
+$string['attachments'] = '添付';
