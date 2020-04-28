@@ -51,7 +51,7 @@ header('Content-type: text/html; charset=Shift_JIS');
 </head>
 
 <body>
-携帯メールアドレスのチェック<br>
+携帯メールアドレスのチェックが完了しました。<br>
 <?php echo $mes; ?><br>
 何か不明なことがありましたら、担当の先生へ尋ねて下さい。
 </body>
