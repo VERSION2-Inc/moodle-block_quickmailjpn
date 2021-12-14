@@ -23,3 +23,4 @@ Moodle 2.0 to 3.11
 
 [License]
 GPL v3
+
