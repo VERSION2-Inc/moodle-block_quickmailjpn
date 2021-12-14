@@ -9,13 +9,19 @@ Mobile Quickmail JPN allows teacher to student contact via email. It is one way 
 The features include:
 
 ・students register their mobile phone email addresses in a Moodle database. A single registration can be used for all courses in a site.
+
 ・the email address is verified and student must click on a link to confirm the registration
+
 ・teachers can send a message (html text editor) with attached files to one, several or all students in the class.
+
 ・Email addresses are kept private and other students cannot view or use them. 
 
 New features in version 3.7 include:
+
 ・file attachments allowed
+
 ・HTML editor added for richer text and image display
+
 ・email header changes
 
 [Requirements]	
