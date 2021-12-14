@@ -96,11 +96,11 @@ function process_attachments($context, $email, $table, $id) {
     //by calling gen_link with @param $plain set to true
     $tlink = $gen_link("{$email->timesent}_attachments.zip", '', true);
 
-      $attachments .= "\n<br/>-------\n<br/>";
-//    $attachments .= 'Moodle Attachments<br/>'.$link;
-//    $attachments .= "\n<br/>".$tlink;
-//    $attachments .= "\n<br/>-------\n<br/>";
-//    $attachments .= 'Download File Contents'. "\n<br />";
+    $attachments .= "\n<br/>-------\n<br/>";
+    $attachments .= 'Moodle Attachments<br/>'.$link;
+    $attachments .= "\n<br/>".$tlink;
+    $attachments .= "\n<br/>-------\n<br/>";
+    $attachments .= 'Download File Contents'. "\n<br />";
 
     return $attachments . flatten_subdirs($tree, $gen_link);
 }
@@ -112,10 +112,10 @@ function flatten_subdirs($tree, $gen_link, $level=0) {
     foreach ($tree['files'] as $filename => $file) {
         $attachments .= $spaces . " " . $gen_link($filename) . "\n<br/>";
     }
-//    foreach ($tree['subdirs'] as $dirname => $subdir) {
-//        $attachments .= $spaces . " ". $dirname . "\n<br/>";
-//        $attachments .= flatten_subdirs($subdir, $gen_link, $level + 2);
-//    }
+    foreach ($tree['subdirs'] as $dirname => $subdir) {
+        $attachments .= $spaces . " ". $dirname . "\n<br/>";
+        $attachments .= flatten_subdirs($subdir, $gen_link, $level + 2);
+    }
 
     return $attachments;
 }
@@ -126,7 +126,7 @@ function get_jmailer() {
 
     $mailer->Version   = 'Moodle '.$CFG->version;         // mailer version
     $mailer->PluginDir = $CFG->libdir.'/phpmailer/';      // plugin directory (eg smtp plugin)
-    $mailer->CharSet   = 'UTF-8';
+    #$mailer->CharSet   = 'UTF-8';
 
     // some MTAs may do double conversion of LF if CRLF used, CRLF is required line ending in RFC 822bis
     if (isset($CFG->mailnewline) and $CFG->mailnewline == 'CRLF') {

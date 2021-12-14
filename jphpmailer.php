@@ -37,7 +37,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 */
 	function addAddress($address,$name="") {
 		if ($name){
-			$name = $this->encodeMimeHeader(mb_convert_encoding($name,"UTF-8",$this->in_enc));
+			$name = $this->encodeMimeHeader(mb_convert_encoding($name,"JIS",$this->in_enc));
 		}
 		parent::addAddress($address,$name);
 	}
@@ -64,7 +64,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 */
 	function addCc($address,$name="") {
 		if ($name){
-			$name = $this->encodeMimeHeader(mb_convert_encoding($name,"UTF-8",$this->in_enc));
+			$name = $this->encodeMimeHeader(mb_convert_encoding($name,"JIS",$this->in_enc));
 		}
 		parent::addCc($address,$name);
 	}
@@ -79,7 +79,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 */
 	function addBcc($address,$name="") {
 		if ($name){
-			$name = $this->encodeMimeHeader(mb_convert_encoding($name,"UTF-8",$this->in_enc));
+			$name = $this->encodeMimeHeader(mb_convert_encoding($name,"JIS",$this->in_enc));
 		}
 		parent::addBcc($address,$name);
 	}
@@ -94,7 +94,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 */
 	function addReplyTo($address,$name="") {
 		if ($name){
-			$name = $this->encodeMimeHeader(mb_convert_encoding($name,"UTF-8",$this->in_enc));
+			$name = $this->encodeMimeHeader(mb_convert_encoding($name,"JIS",$this->in_enc));
 		}
 		parent::addReplyTo($address,$name);
 	}
@@ -105,7 +105,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 * @param string $subject 題名
 	 */
 	function setSubject($subject){
-		$this->Subject = $this->encodeMimeHeader(mb_convert_encoding($subject,"UTF-8",$this->in_enc));
+		$this->Subject = $this->encodeMimeHeader(mb_convert_encoding($subject,"JIS",$this->in_enc));
 	}
 
 	/**
@@ -126,7 +126,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 * @param string $fromname 差し出し人名
 	 */
 	function setFromName($fromname){
-		$this->FromName = $this->encodeMimeHeader(mb_convert_encoding($fromname,"UTF-8",$this->in_enc));
+		$this->FromName = $this->encodeMimeHeader(mb_convert_encoding($fromname,"JIS",$this->in_enc));
 	}
 
 	/**
@@ -135,7 +135,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 * @param string $body 本文
 	 */
 	function setBody($body){
-		$this->Body = mb_convert_encoding($body,"UTF-8",$this->in_enc);
+		$this->Body = mb_convert_encoding($body,"JIS",$this->in_enc);
 		$this->AltBody = "";
 		$this->IsHtml(false);
 	}
@@ -146,7 +146,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 * @param string $htmlbody 本文 (HTML)
 	 */
 	function setHtmlBody($htmlbody){
-		$this->Body = mb_convert_encoding($htmlbody,"UTF-8",$this->in_enc);
+		$this->Body = mb_convert_encoding($htmlbody,"JIS",$this->in_enc);
 		$this->IsHtml(true);
 	}
 
@@ -157,7 +157,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 	 * @param string $altbody 本文
 	 */
 	function setAltBody($altbody){
-		$this->AltBody = mb_convert_encoding($altbody,"UTF-8",$this->in_enc);
+		$this->AltBody = mb_convert_encoding($altbody,"JIS",$this->in_enc);
 	}
 
 	/**
@@ -170,7 +170,7 @@ class JPHPMailer extends \PHPMailer\PHPMailer\PHPMailer {
 		if (!$value){
 			return;
 		}
-		$this->addCustomHeader($key.":".$this->encodeMimeHeader(mb_convert_encoding($value,"UTF-8",$this->in_enc)));
+		$this->addCustomHeader($key.":".$this->encodeMimeHeader(mb_convert_encoding($value,"JIS",$this->in_enc)));
 	}
 
     /**
