@@ -46,12 +46,13 @@ class   email_form extends moodleform {
 
         $mform->addElement('text', 'subject', get_string('subject', 'forum'),array('size'=>60));
         $mform->setType('subject', PARAM_TEXT);
+        $mform->addElement('editor', 'message_editor', get_string('message', 'forum'),
+            array(), $this->_customdata['editor_options']);
         $mform->addElement(
             'filemanager', 'attachments', get_string('attachments', 'block_quickmailjpn'),
             null, array('subdirs' => 1, 'accepted_types' => '*')
         );
-        $mform->addElement('editor', 'message_editor', get_string('message', 'forum'),
-            array(), $this->_customdata['editor_options']);
+
 
         $mform->addElement('html','<div align="center"><input type="checkbox" name="sendmecopy" id="sendmecopy"><label for="sendmecopy">'.get_string('sendmecopy', 'block_quickmailjpn').'</label></div>');
         $buttons = array();
