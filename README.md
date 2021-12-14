@@ -4,6 +4,7 @@ Mobile Quickmail JPN
 version 3.11, release 1 - 2021.10.20
 
 [Features]
+
 Mobile Quickmail JPN allows teacher to student contact via email. It is one way communication, from the teacher to either a single student, selected students, or all students in a course. This plugin is intended for use with Japanese mobile phones. It has not been tested in any other countries. Please contact VERSION2 at <support@ver2.jp> if you find it works in your country.
 
 The features include:
@@ -24,9 +25,11 @@ New features in version 3.7 include:
 
 ・email header changes
 
-[Requirements]	
+[Requirements]
+
 Moodle 2.0 to 3.11
 
 [License]
+
 GPL v3
 
